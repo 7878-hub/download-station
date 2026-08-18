@@ -434,3 +434,47 @@ document.addEventListener('keydown', (e) => {
         handleKonamiInput(dir);
     }
 });
+
+// ===== 跳吓彩蛋 =====
+(function initScare() {
+    const btn = document.getElementById('scareBtn');
+    const overlay = document.getElementById('scareOverlay');
+    if (!btn || !overlay) return;
+
+    let scareAudio = null;
+    let scared = false;
+
+    btn.addEventListener('click', () => {
+        if (scared) return;
+        scared = true;
+        // 屏幕震动
+        document.body.classList.add('scare-shake');
+        setTimeout(() => document.body.classList.remove('scare-shake'), 400);
+        // 显示图片
+        overlay.classList.add('show');
+        // 播放音频(首次点击时创建音频对象, 6MB 延迟加载)
+        if (!scareAudio) {
+            scareAudio = new Audio('media/jumpscare.mp3');
+            scareAudio.preload = 'auto';
+            // 音频播放完毕后才关闭
+            scareAudio.addEventListener('ended', closeScare);
+            // 音频加载失败或播放失败时也关闭(防止卡死)
+            scareAudio.addEventListener('error', () => {
+                overlay.classList.remove('show');
+                setTimeout(() => { scared = false; }, 500);
+            });
+        }
+        scareAudio.currentTime = 0;
+        scareAudio.play().catch(() => {
+            // 播放被阻止, 直接关闭
+            overlay.classList.remove('show');
+            setTimeout(() => { scared = false; }, 500);
+        });
+    });
+
+    function closeScare() {
+        overlay.classList.remove('show');
+        // 1.5秒后才能再点按钮
+        setTimeout(() => { scared = false; }, 1500);
+    }
+})();

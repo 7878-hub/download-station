@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+<title>3D 捏捏乐 · 真实软体</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;width:100%;overflow:hidden;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC',sans-serif;background:linear-gradient(135deg,#fef9f3 0%,#f5ede0 100%)}
+canvas{display:block;position:fixed;inset:0;z-index:1}
+
+/* ===== 顶部栏 ===== */
+.topbar{position:fixed;top:16px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:center;z-index:10;pointer-events:none}
+.logo{font-size:24px;font-weight:900;color:#2d3a4a;letter-spacing:1px;background:linear-gradient(135deg,#ff7e5f,#feb47b,#86a8e7);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.char-card{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.85);backdrop-filter:blur(12px);padding:8px 8px 8px 14px;border-radius:30px;box-shadow:0 4px 16px rgba(0,0,0,.08);border:1px solid rgba(0,0,0,.05);pointer-events:auto}
+.char-emoji{font-size:24px;line-height:1}
+.char-name{font-size:14px;font-weight:700;color:#2d3a4a;margin-right:6px}
+.switch-btn{background:linear-gradient(135deg,#ff7e5f,#feb47b);color:#fff;border:none;padding:8px 14px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;transition:transform .2s;box-shadow:0 2px 8px rgba(255,126,95,.3)}
+.switch-btn:hover{transform:scale(1.05)}
+
+/* ===== 右上角开关 ===== */
+.toggles{position:fixed;top:70px;right:16px;display:flex;flex-direction:column;gap:10px;z-index:10}
+.t-row{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.85);backdrop-filter:blur(12px);padding:10px 14px;border-radius:20px;box-shadow:0 4px 16px rgba(0,0,0,.06);border:1px solid rgba(0,0,0,.05)}
+.t-label{font-size:13px;font-weight:600;color:#2d3a4a}
+.t-switch{width:36px;height:20px;background:#d4d4d4;border-radius:10px;position:relative;cursor:pointer;transition:background .3s}
+.t-switch::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .3s}
+.t-switch.on{background:linear-gradient(135deg,#ff7e5f,#feb47b)}
+.t-switch.on::after{transform:translateX(16px)}
+
+/* ===== 底部材质选择 ===== */
+.materials{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);display:flex;gap:10px;z-index:10;background:rgba(255,255,255,.85);backdrop-filter:blur(12px);padding:10px;border-radius:24px;box-shadow:0 6px 24px rgba(0,0,0,.1);border:1px solid rgba(0,0,0,.05)}
+.mat{flex:1;min-width:80px;padding:10px 14px;border-radius:16px;text-align:center;cursor:pointer;transition:all .2s;border:2px solid transparent}
+.mat:hover{background:rgba(255,126,95,.1)}
+.mat.active{background:linear-gradient(135deg,rgba(255,126,95,.15),rgba(254,180,123,.15));border-color:#ff7e5f;box-shadow:0 2px 8px rgba(255,126,95,.2)}
+.mat-name{font-size:14px;font-weight:800;color:#2d3a4a}
+.mat-desc{font-size:10px;color:#6b7a8a;margin-top:2px}
+
+/* ===== 返回按钮 ===== */
+.back-btn{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.85);backdrop-filter:blur(12px);border:1px solid rgba(0,0,0,.05);color:#2d3a4a;padding:8px 18px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;z-index:20;box-shadow:0 4px 16px rgba(0,0,0,.08);display:none}
+.back-btn.show{display:block}
+
+/* ===== 网格视图 ===== */
+.grid-view{position:fixed;inset:0;z-index:30;background:linear-gradient(135deg,#fef9f3 0%,#f5ede0 100%);overflow-y:auto;padding:30px 20px 60px}
+.grid-view.hide{display:none}
+.grid-header{text-align:center;margin-bottom:30px}
+.grid-header h1{font-size:36px;font-weight:900;color:#2d3a4a;letter-spacing:2px;background:linear-gradient(135deg,#ff7e5f,#feb47b,#86a8e7);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.grid-header p{color:#6b7a8a;font-size:14px;margin-top:8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:16px;max-width:700px;margin:0 auto}
+.grid-card{background:#fff;border-radius:20px;padding:20px 12px;text-align:center;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.06);border:1px solid rgba(0,0,0,.04);transition:all .3s}
+.grid-card:hover{transform:translateY(-4px);box-shadow:0 8px 24px rgba(255,126,95,.2)}
+.grid-emoji{font-size:60px;line-height:1;margin-bottom:8px;display:block}
+.grid-name{font-size:13px;font-weight:700;color:#2d3a4a}
+
+/* ===== 提示 ===== */
+.hint{position:fixed;bottom:130px;left:50%;transform:translateX(-50%);background:rgba(45,58,74,.85);color:#fff;padding:8px 18px;border-radius:20px;font-size:12px;z-index:10;backdrop-filter:blur(8px);opacity:0;transition:opacity .3s;pointer-events:none}
+.hint.show{opacity:1}
+
+/* ===== 计数器 ===== */
+.stats{position:fixed;bottom:130px;right:16px;background:rgba(255,255,255,.85);backdrop-filter:blur(12px);padding:8px 14px;border-radius:16px;display:flex;gap:14px;z-index:10;border:1px solid rgba(0,0,0,.05);box-shadow:0 4px 16px rgba(0,0,0,.06)}
+.stat{text-align:center}
+.stat-n{font-size:18px;font-weight:800;color:#ff7e5f;line-height:1}
+.stat-l{font-size:10px;color:#6b7a8a;margin-top:2px}
+
+/* ===== 无敌少侠按钮 ===== */
+.hero-btn{position:fixed;left:16px;top:50%;transform:translateY(-50%);z-index:10;background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);color:#e94560;border:2px solid #e94560;padding:14px 10px;border-radius:18px;font-size:13px;font-weight:900;cursor:pointer;writing-mode:vertical-rl;letter-spacing:3px;box-shadow:0 0 20px rgba(233,69,96,.4),0 4px 16px rgba(0,0,0,.3);transition:all .3s;animation:heroPulse 2s ease-in-out infinite}
+.hero-btn:hover{transform:translateY(-50%) scale(1.08);box-shadow:0 0 30px rgba(233,69,96,.6),0 6px 20px rgba(0,0,0,.4)}
+.hero-btn.on{background:linear-gradient(135deg,#e94560,#c23152);color:#fff;border-color:#fff;box-shadow:0 0 30px rgba(233,69,96,.7),0 0 60px rgba(233,69,96,.3)}
+@keyframes heroPulse{0%,100%{box-shadow:0 0 20px rgba(233,69,96,.4),0 4px 16px rgba(0,0,0,.3)}50%{box-shadow:0 0 30px rgba(233,69,96,.6),0 4px 16px rgba(0,0,0,.3)}}
+.hero-btn .hero-icon{font-size:20px;writing-mode:horizontal-tb;display:block;margin-bottom:6px}
+</style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<!-- 3D 视图 UI -->
+<div class="topbar">
+  <div class="logo">3D 捏捏乐</div>
+  <div class="char-card">
+    <span class="char-emoji" id="charEmoji">😀</span>
+    <span class="char-name" id="charName">笑容可掬</span>
+    <button class="switch-btn" id="switchBtn">换一个</button>
+  </div>
+</div>
+
+<div class="toggles">
+  <div class="t-row">
+    <span class="t-label">橡皮泥模式</span>
+    <div class="t-switch" id="claySwitch"></div>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="stat-n" id="cnt">0</div><div class="stat-l">捏</div></div>
+  <div class="stat"><div class="stat-n" id="deform">0%</div><div class="stat-l">变形</div></div>
+</div>
+
+<div class="materials">
+  <div class="mat" data-i="0">
+    <div class="mat-name">肉感</div>
+    <div class="mat-desc">紧实回弹</div>
+  </div>
+  <div class="mat" data-i="1">
+    <div class="mat-name">Q弹</div>
+    <div class="mat-desc">弹嫩带劲</div>
+  </div>
+  <div class="mat active" data-i="2">
+    <div class="mat-name">超软</div>
+    <div class="mat-desc">瘫软拉丝</div>
+  </div>
+</div>
+
+<div class="hint" id="hint">👆 按住拖拽可以拉扯球体</div>
+
+<button class="hero-btn" id="heroBtn"><span class="hero-icon">🥋</span>无敌少侠</button>
+
+<button class="back-btn show" id="backBtn">← 返回</button>
+
+<!-- 网格视图 -->
+<div class="grid-view hide" id="gridView">
+  <div class="grid-header">
+    <h1>3D 捏捏乐</h1>
+    <p>选一个梗，进去拉扯 👆</p>
+  </div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<script src="https://unpkg.com/three@0.158.0/build/three.min.js"></script>
+<script>
+// ===== 角色库 =====
+const memes = [
+  { emoji:'😀', name:'笑容可掬' },
+  { emoji:'😎', name:'墨镜大佬' },
+  { emoji:'🤡', name:'小丑竟是我' },
+  { emoji:'😱', name:'啊这' },
+  { emoji:'🥵', name:'热化了' },
+  { emoji:'🤔', name:'让我想想' },
+  { emoji:'😭', name:'破防了' },
+  { emoji:'🤯', name:'脑洞炸裂' },
+  { emoji:'😏', name:'懂得都懂' },
+  { emoji:'😴', name:'摆烂了' },
+  { emoji:'🥳', name:'Party' },
+  { emoji:'💀', name:'寄了' },
+  { emoji:'🤓', name:'其实吧' },
+  { emoji:'😡', name:'气死我了' },
+  { emoji:'🤪', name:'发癫了' },
+  { emoji:'👻', name:'背后有人' },
+];
+
+// ===== 状态 =====
+let currentChar = 0;
+let clayMode = false;
+let counts = {};
+let soundOn = true;
+let audioCtx = null;
+
+// 材质配置: 影响半径, 影响强度, 弹簧刚度, 阻尼, 邻居耦合
+const matCfg = [
+  { radius: 0.38, strength: 1.0, spring: 80, damp: 7, neighbor: 25 },  // 肉感
+  { radius: 0.52, strength: 1.2, spring: 50, damp: 3.5, neighbor: 45 },  // Q弹
+  { radius: 0.72, strength: 1.5, spring: 25, damp: 1.8, neighbor: 55 },  // 超软
+];
+let currentMat = 2;
+let isAutoPulling = false; // 无敌少侠自动拉扯中(跳过弹簧物理)
+
+// ===== 3D 场景 =====
+const canvas = document.getElementById('canvas');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+camera.position.set(0, 0, 3.2);
+
+function resize() {
+  const w = window.innerWidth, h = window.innerHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+window.addEventListener('resize', resize);
+resize();
+
+// 灯光
+scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+const keyLight = new THREE.DirectionalLight(0xffffff, 1.4);
+keyLight.position.set(3, 4, 5);
+scene.add(keyLight);
+const fillLight = new THREE.DirectionalLight(0xa0c0ff, 0.6);
+fillLight.position.set(-3, 1, 3);
+scene.add(fillLight);
+const rimLight = new THREE.DirectionalLight(0xffaa66, 0.4);
+rimLight.position.set(0, -2, -3);
+scene.add(rimLight);
+
+// ===== Emoji 纹理 =====
+function makeEmojiTexture(emoji) {
+  const c = document.createElement('canvas');
+  c.width = c.height = 1024;
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0, 0, 1024, 1024);
+  // 缩小 emoji 使其完整显示在球体正面半球内
+  ctx.font = '460px "Segoe UI Emoji", "Apple Color Emoji", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(emoji, 512, 512);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 8;
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.offset.x = 0.25; // 让 emoji 朝向相机(+Z)
+  return tex;
+}
+
+// ===== 球体 =====
+const SPHERE_R = 1.0;
+const SPHERE_SEG = 64;
+const geometry = new THREE.SphereGeometry(SPHERE_R, SPHERE_SEG, SPHERE_SEG);
+const posAttr = geometry.attributes.position;
+const restPos = new Float32Array(posAttr.array.length);
+restPos.set(posAttr.array);
+const deform = new Float32Array(posAttr.array.length); // 形变
+const velocity = new Float32Array(posAttr.array.length); // 顶点速度
+const clayBase = new Float32Array(posAttr.array.length); // 橡皮泥模式: 每次拖拽开始时的形变快照
+
+// 预计算邻居连接表 (用于波动传播)
+const _W = SPHERE_SEG + 1, _H = SPHERE_SEG + 1;
+const neighborList = new Array(posAttr.count);
+for (let iy = 0; iy < _H; iy++) {
+  for (let ix = 0; ix < _W; ix++) {
+    const i = iy * _W + ix;
+    const ns = [];
+    ns.push(iy * _W + ((ix - 1 + _W) % _W)); // 左(环绕)
+    ns.push(iy * _W + ((ix + 1) % _W));       // 右(环绕)
+    if (iy > 0) ns.push((iy - 1) * _W + ix);  // 上
+    if (iy < _H - 1) ns.push((iy + 1) * _W + ix); // 下
+    neighborList[i] = ns;
+  }
+}
+
+let material = new THREE.MeshStandardMaterial({
+  map: makeEmojiTexture(memes[0].emoji),
+  roughness: 0.55,
+  metalness: 0.05,
+  transparent: true,
+  side: THREE.DoubleSide,
+});
+const mesh = new THREE.Mesh(geometry, material);
+scene.add(mesh);
+
+// 阴影地面
+const groundGeo = new THREE.PlaneGeometry(8, 8);
+const groundMat = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.08 });
+const ground = new THREE.Mesh(groundGeo, groundMat);
+ground.rotation.x = -Math.PI / 2;
+ground.position.y = -1.3;
+scene.add(ground);
+
+// ===== 物理 =====
+let isDragging = false;
+let dragVertexIdx = -1;
+const dragPlane = new THREE.Plane();
+const dragOffset = new THREE.Vector3();
+const dragStartWorld = new THREE.Vector3(); // 拖拽起点世界坐标(橡皮泥模式用)
+const raycaster = new THREE.Raycaster();
+const mouseNDC = new THREE.Vector2();
+
+function applyVertexPos() {
+  for (let i = 0; i < posAttr.count; i++) {
+    const idx = i * 3;
+    posAttr.array[idx] = restPos[idx] + deform[idx];
+    posAttr.array[idx+1] = restPos[idx+1] + deform[idx+1];
+    posAttr.array[idx+2] = restPos[idx+2] + deform[idx+2];
+  }
+  posAttr.needsUpdate = true;
+  geometry.computeVertexNormals();
+}
+
+function getDeformLevel() {
+  let maxD = 0;
+  for (let i = 0; i < posAttr.count; i++) {
+    const idx = i * 3;
+    const d = Math.sqrt(deform[idx]**2 + deform[idx+1]**2 + deform[idx+2]**2);
+    if (d > maxD) maxD = d;
+  }
+  return Math.min(100, Math.round(maxD / SPHERE_R * 100));
+}
+
+// ===== 动画循环 =====
+let lastT = 0;
+function animate(t) {
+  requestAnimationFrame(animate);
+  const dt = Math.min(0.05, (t - lastT) / 1000) || 0.016;
+  lastT = t;
+  
+  // 弹簧-质点物理 (果冻波动)
+  if (!isDragging && !clayMode && !isAutoPulling) {
+    const cfg = matCfg[currentMat];
+    const kS = cfg.spring, kD = cfg.damp, kN = cfg.neighbor;
+    const substeps = 3;
+    const sdt = dt / substeps;
+    
+    for (let s = 0; s < substeps; s++) {
+      // 计算力并更新速度
+      for (let i = 0; i < posAttr.count; i++) {
+        const idx = i * 3;
+        // 弹簧力 (拉回原位)
+        let fx = -kS * deform[idx];
+        let fy = -kS * deform[idx+1];
+        let fz = -kS * deform[idx+2];
+        // 邻居耦合 (波动传播)
+        const ns = neighborList[i];
+        for (let n = 0; n < ns.length; n++) {
+          const jdx = ns[n] * 3;
+          fx += kN * (deform[jdx] - deform[idx]);
+          fy += kN * (deform[jdx+1] - deform[idx+1]);
+          fz += kN * (deform[jdx+2] - deform[idx+2]);
+        }
+        // 阻尼
+        fx -= kD * velocity[idx];
+        fy -= kD * velocity[idx+1];
+        fz -= kD * velocity[idx+2];
+        // 更新速度
+        velocity[idx] += fx * sdt;
+        velocity[idx+1] += fy * sdt;
+        velocity[idx+2] += fz * sdt;
+      }
+      // 更新位置
+      let anyMove = false;
+      for (let i = 0; i < posAttr.count; i++) {
+        const idx = i * 3;
+        const vx = velocity[idx] * sdt;
+        const vy = velocity[idx+1] * sdt;
+        const vz = velocity[idx+2] * sdt;
+        if (vx || vy || vz) {
+          deform[idx] += vx;
+          deform[idx+1] += vy;
+          deform[idx+2] += vz;
+          anyMove = true;
+        }
+      }
+      if (!anyMove) {
+        // 全静止, 清零防漂移
+        for (let i = 0; i < velocity.length; i++) velocity[i] = 0;
+        break;
+      }
+    }
+    applyVertexPos();
+    document.getElementById('deform').textContent = getDeformLevel() + '%';
+  }
+  
+  // 浮动
+  mesh.position.y = Math.sin(t * 0.001) * 0.05;
+  
+  renderer.render(scene, camera);
+}
+animate(0);
+
+// ===== 拾取 =====
+function pickVertex(clientX, clientY) {
+  const rect = canvas.getBoundingClientRect();
+  mouseNDC.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+  mouseNDC.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+  raycaster.setFromCamera(mouseNDC, camera);
+  const hits = raycaster.intersectObject(mesh);
+  if (!hits.length) return -1;
+  const point = hits[0].point;
+  // 找最近顶点
+  let minD = Infinity, minI = -1;
+  for (let i = 0; i < posAttr.count; i++) {
+    const idx = i * 3;
+    const dx = posAttr.array[idx] - point.x;
+    const dy = posAttr.array[idx+1] - point.y;
+    const dz = posAttr.array[idx+2] - point.z;
+    const d = dx*dx + dy*dy + dz*dz;
+    if (d < minD) { minD = d; minI = i; }
+  }
+  return minI;
+}
+
+function startDrag(clientX, clientY) {
+  const idx = pickVertex(clientX, clientY);
+  if (idx < 0) return;
+  isDragging = true;
+  dragVertexIdx = idx;
+  // 橡皮泥模式: 保存当前形变作为这次拖拽的基准(累加用)
+  if (clayMode) {
+    clayBase.set(deform);
+  }
+  // 拖拽平面: 垂直相机方向, 过当前顶点
+  const camDir = new THREE.Vector3();
+  camera.getWorldDirection(camDir);
+  const vp = new THREE.Vector3(posAttr.array[idx*3], posAttr.array[idx*3+1], posAttr.array[idx*3+2]);
+  dragPlane.setFromNormalAndCoplanarPoint(camDir, vp);
+  dragStartWorld.copy(vp); // 记录起点(含已有形变)
+  // 偏移
+  const intersect = new THREE.Vector3();
+  if (raycaster.ray.intersectPlane(dragPlane, intersect)) {
+    dragOffset.copy(vp).sub(intersect);
+  } else {
+    dragOffset.set(0,0,0);
+  }
+  counts[currentChar] = (counts[currentChar]||0) + 1;
+  document.getElementById('cnt').textContent = counts[currentChar];
+  hideHint();
+}
+
+function moveDrag(clientX, clientY) {
+  if (!isDragging) return;
+  const rect = canvas.getBoundingClientRect();
+  mouseNDC.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+  mouseNDC.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+  raycaster.setFromCamera(mouseNDC, camera);
+  const target = new THREE.Vector3();
+  if (!raycaster.ray.intersectPlane(dragPlane, target)) return;
+  target.add(dragOffset);
+  
+  // 当前顶点的形变量
+  const rIdx = dragVertexIdx * 3;
+  const restX = restPos[rIdx], restY = restPos[rIdx+1], restZ = restPos[rIdx+2];
+  const defX = target.x - restX;
+  const defY = target.y - restY;
+  const defZ = target.z - restZ;
+  // 橡皮泥模式: 用拖拽位移增量(相对起点), 在已有形变上累加
+  const deltaX = target.x - dragStartWorld.x;
+  const deltaY = target.y - dragStartWorld.y;
+  const deltaZ = target.z - dragStartWorld.z;
+  
+  // 影响半径内顶点都跟着形变
+  const radius = matCfg[currentMat].radius;
+  const r2 = radius * radius;
+  const strength = matCfg[currentMat].strength;
+  for (let i = 0; i < posAttr.count; i++) {
+    const idx = i * 3;
+    const dx = restPos[idx] - restX;
+    const dy = restPos[idx+1] - restY;
+    const dz = restPos[idx+2] - restZ;
+    const d2 = dx*dx + dy*dy + dz*dz;
+    if (d2 < r2 * 4) {
+      const falloff = Math.exp(-d2 / r2);
+      if (clayMode) {
+        // 橡皮泥: 在已有形变基础上累加拖拽位移
+        deform[idx] = clayBase[idx] + deltaX * falloff * strength;
+        deform[idx+1] = clayBase[idx+1] + deltaY * falloff * strength;
+        deform[idx+2] = clayBase[idx+2] + deltaZ * falloff * strength;
+      } else {
+        deform[idx] = defX * falloff * strength;
+        deform[idx+1] = defY * falloff * strength;
+        deform[idx+2] = defZ * falloff * strength;
+      }
+      velocity[idx] = 0;
+      velocity[idx+1] = 0;
+      velocity[idx+2] = 0;
+    }
+  }
+  applyVertexPos();
+  document.getElementById('deform').textContent = getDeformLevel() + '%';
+}
+
+function endDrag() {
+  if (isDragging && !clayMode) {
+    // 松手时给被拉扯区域一个回弹初速度, 让果冻效果更明显
+    const cfg = matCfg[currentMat];
+    const rIdx = dragVertexIdx * 3;
+    const restX = restPos[rIdx], restY = restPos[rIdx+1], restZ = restPos[rIdx+2];
+    const radius = cfg.radius;
+    const r2 = radius * radius;
+    const kick = 8 * cfg.strength;
+    for (let i = 0; i < posAttr.count; i++) {
+      const idx = i * 3;
+      const dx = restPos[idx] - restX;
+      const dy = restPos[idx+1] - restY;
+      const dz = restPos[idx+2] - restZ;
+      const d2 = dx*dx + dy*dy + dz*dz;
+      if (d2 < r2 * 4) {
+        const falloff = Math.exp(-d2 / r2);
+        // 朝 rest 方向给初速度 (回弹方向)
+        velocity[idx] -= deform[idx] * falloff * kick;
+        velocity[idx+1] -= deform[idx+1] * falloff * kick;
+        velocity[idx+2] -= deform[idx+2] * falloff * kick;
+      }
+    }
+  }
+  isDragging = false;
+  dragVertexIdx = -1;
+}
+
+// 鼠标事件
+canvas.addEventListener('mousedown', e => { e.preventDefault(); startDrag(e.clientX, e.clientY); });
+window.addEventListener('mousemove', e => moveDrag(e.clientX, e.clientY));
+window.addEventListener('mouseup', endDrag);
+
+// 触屏事件
+canvas.addEventListener('touchstart', e => {
+  e.preventDefault();
+  const t = e.touches[0];
+  startDrag(t.clientX, t.clientY);
+}, { passive: false });
+window.addEventListener('touchmove', e => {
+  if (!isDragging) return;
+  e.preventDefault();
+  const t = e.touches[0];
+  moveDrag(t.clientX, t.clientY);
+}, { passive: false });
+window.addEventListener('touchend', endDrag);
+
+// ===== 材质切换 =====
+document.querySelectorAll('.mat').forEach(el => {
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.mat').forEach(x => x.classList.remove('active'));
+    el.classList.add('active');
+    currentMat = parseInt(el.dataset.i);
+  });
+});
+
+// ===== 橡皮泥模式 =====
+const claySwitch = document.getElementById('claySwitch');
+claySwitch.addEventListener('click', () => {
+  clayMode = !clayMode;
+  claySwitch.classList.toggle('on', clayMode);
+  if (!clayMode) {
+    // 关闭时不直接清零, 给所有形变顶点一个回弹初速度, 让弹簧物理自然回弹
+    const cfg = matCfg[currentMat];
+    const kick = 6 * cfg.strength;
+    for (let i = 0; i < posAttr.count; i++) {
+      const idx = i * 3;
+      velocity[idx] -= deform[idx] * kick;
+      velocity[idx+1] -= deform[idx+1] * kick;
+      velocity[idx+2] -= deform[idx+2] * kick;
+    }
+  }
+});
+
+// ===== 切换角色 =====
+function switchChar() {
+  currentChar = (currentChar + 1) % memes.length;
+  const m = memes[currentChar];
+  document.getElementById('charEmoji').textContent = m.emoji;
+  document.getElementById('charName').textContent = m.name;
+  // 换纹理
+  const newTex = makeEmojiTexture(m.emoji);
+  if (material.map) material.map.dispose();
+  material.map = newTex;
+  material.needsUpdate = true;
+  // 重置形变
+  for (let i = 0; i < deform.length; i++) { deform[i] = 0; velocity[i] = 0; }
+  applyVertexPos();
+  document.getElementById('deform').textContent = '0%';
+  // 播放切换音效
+  playSound('boing');
+}
+document.getElementById('switchBtn').addEventListener('click', switchChar);
+
+// ===== 返回网格 =====
+document.getElementById('backBtn').addEventListener('click', () => {
+  document.getElementById('gridView').classList.remove('hide');
+});
+
+// ===== 构建网格 =====
+const grid = document.getElementById('grid');
+memes.forEach((m, idx) => {
+  const card = document.createElement('div');
+  card.className = 'grid-card';
+  card.innerHTML = `<span class="grid-emoji">${m.emoji}</span><div class="grid-name">${m.name}</div>`;
+  card.addEventListener('click', () => {
+    currentChar = idx;
+    document.getElementById('charEmoji').textContent = m.emoji;
+    document.getElementById('charName').textContent = m.name;
+    const newTex = makeEmojiTexture(m.emoji);
+    if (material.map) material.map.dispose();
+    material.map = newTex;
+    material.needsUpdate = true;
+    for (let i = 0; i < deform.length; i++) { deform[i] = 0; velocity[i] = 0; }
+    applyVertexPos();
+    document.getElementById('deform').textContent = '0%';
+    document.getElementById('gridView').classList.add('hide');
+    showHint();
+  });
+  grid.appendChild(card);
+});
+
+// ===== 提示 =====
+let hintTimer = null;
+function showHint() {
+  const h = document.getElementById('hint');
+  h.classList.add('show');
+  clearTimeout(hintTimer);
+  hintTimer = setTimeout(() => h.classList.remove('show'), 3000);
+}
+function hideHint() {
+  document.getElementById('hint').classList.remove('show');
+}
+showHint();
+
+// ===== 音效 =====
+function getAudio() { if (!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)(); return audioCtx }
+function playSound(type) {
+  if (!soundOn) return;
+  try {
+    const ctx = getAudio();
+    const now = ctx.currentTime;
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = 'sine';
+    if (type === 'boing') {
+      o.frequency.setValueAtTime(200, now);
+      o.frequency.exponentialRampToValueAtTime(600, now + 0.1);
+      o.frequency.exponentialRampToValueAtTime(150, now + 0.3);
+      g.gain.setValueAtTime(0.2, now);
+      g.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+    }
+    o.connect(g).connect(ctx.destination);
+    o.start(now);
+    o.stop(now + 0.4);
+  } catch(e){}
+}
+document.body.addEventListener('click', () => getAudio(), { once: true });
+
+// 首次进入显示当前角色
+document.getElementById('charEmoji').textContent = memes[0].emoji;
+document.getElementById('charName').textContent = memes[0].name;
+
+// ===== 无敌少侠模式 =====
+const heroBtn = document.getElementById('heroBtn');
+let heroActive = false;
+let heroTimers = [];
+
+// --- 音乐引擎 ---
+let musicPlaying = false;
+let musicTimerId = null;
+
+function playKick(ctx, t) {
+  const o = ctx.createOscillator(), g = ctx.createGain();
+  o.frequency.setValueAtTime(150, t);
+  o.frequency.exponentialRampToValueAtTime(0.01, t + 0.18);
+  g.gain.setValueAtTime(0.35, t);
+  g.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+  o.connect(g).connect(ctx.destination);
+  o.start(t); o.stop(t + 0.2);
+}
+function playSnare(ctx, t) {
+  const buf = ctx.createBuffer(1, ctx.sampleRate * 0.12, ctx.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = (Math.random()*2-1) * Math.exp(-i / (ctx.sampleRate*0.02));
+  const src = ctx.createBufferSource(); src.buffer = buf;
+  const g = ctx.createGain(); g.gain.setValueAtTime(0.18, t);
+  g.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+  const f = ctx.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 1000;
+  src.connect(f).connect(g).connect(ctx.destination);
+  src.start(t);
+}
+function playHat(ctx, t) {
+  const buf = ctx.createBuffer(1, ctx.sampleRate * 0.05, ctx.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = (Math.random()*2-1) * Math.exp(-i / (ctx.sampleRate*0.008));
+  const src = ctx.createBufferSource(); src.buffer = buf;
+  const g = ctx.createGain(); g.gain.setValueAtTime(0.08, t);
+  g.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+  const f = ctx.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 6000;
+  src.connect(f).connect(g).connect(ctx.destination);
+  src.start(t);
+}
+function playBass(ctx, t, freq) {
+  const o = ctx.createOscillator(), g = ctx.createGain();
+  o.type = 'sawtooth'; o.frequency.value = freq;
+  const f = ctx.createBiquadFilter(); f.type = 'lowpass';
+  f.frequency.setValueAtTime(400, t);
+  f.frequency.exponentialRampToValueAtTime(80, t + 0.3);
+  g.gain.setValueAtTime(0.12, t);
+  g.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+  o.connect(f).connect(g).connect(ctx.destination);
+  o.start(t); o.stop(t + 0.36);
+}
+function playLead(ctx, t, freq) {
+  const o = ctx.createOscillator(), g = ctx.createGain();
+  o.type = 'square'; o.frequency.value = freq;
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(0.07, t + 0.02);
+  g.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+  o.connect(g).connect(ctx.destination);
+  o.start(t); o.stop(t + 0.24);
+}
+function playWub(ctx, t) {
+  const o = ctx.createOscillator(), g = ctx.createGain();
+  o.type = 'sawtooth';
+  o.frequency.setValueAtTime(200, t);
+  o.frequency.exponentialRampToValueAtTime(60, t + 0.3);
+  o.frequency.exponentialRampToValueAtTime(200, t + 0.6);
+  const f = ctx.createBiquadFilter(); f.type = 'lowpass';
+  f.frequency.setValueAtTime(300, t);
+  f.frequency.exponentialRampToValueAtTime(2000, t + 0.15);
+  f.frequency.exponentialRampToValueAtTime(300, t + 0.3);
+  f.frequency.exponentialRampToValueAtTime(2000, t + 0.45);
+  f.frequency.exponentialRampToValueAtTime(300, t + 0.6);
+  g.gain.setValueAtTime(0.1, t);
+  g.gain.exponentialRampToValueAtTime(0.001, t + 0.6);
+  o.connect(f).connect(g).connect(ctx.destination);
+  o.start(t); o.stop(t + 0.62);
+}
+
+function startHeroMusic() {
+  if (musicPlaying) return;
+  musicPlaying = true;
+  const ctx = getAudio();
+  const bpm = 138;
+  const beat = 60 / bpm;
+  let nextTime = ctx.currentTime + 0.15;
+  let step = 0;
+
+  // 音阶
+  const C3=130.81, D3=146.83, E3=164.81, G3=196.00, A3=220.00;
+  const C5=523.25, D5=587.33, E5=659.25, G5=783.99, A5=880.00, C6=1046.50;
+  // 贝斯: 4小节循环 C-C-G-A
+  const bassNotes = [C3,C3,C3,C3, C3,C3,G3,G3, G3,G3,G3,G3, A3,A3,A3,A3];
+  // 主旋律: 英雄上行琶音
+  const leadNotes = [C5,E5,G5,C6, G5,E5,C5,G5, C5,E5,G5,C6, A5,G5,E5,C5];
+
+  function scheduleAhead() {
+    if (!musicPlaying) return;
+    const ahead = ctx.currentTime + 0.3;
+    while (nextTime < ahead) {
+      const s16 = step % 16;
+      // Kick: 每拍
+      if (s16 % 2 === 0) playKick(ctx, nextTime);
+      // Snare: 第2、4拍
+      if (s16 === 2 || s16 === 6 || s16 === 10 || s16 === 14) playSnare(ctx, nextTime);
+      // Hat: 每个16分音符
+      playHat(ctx, nextTime);
+      // 贝斯: 每个8分音符
+      if (s16 % 2 === 0) playBass(ctx, nextTime, bassNotes[s16]);
+      // 主旋律: 每个8分音符
+      if (s16 % 2 === 0) playLead(ctx, nextTime, leadNotes[s16]);
+      // Wub: 每小节开头
+      if (s16 === 0 || s16 === 8) playWub(ctx, nextTime);
+
+      nextTime += beat * 0.25; // 16分音符
+      step++;
+    }
+    musicTimerId = setTimeout(scheduleAhead, 100);
+  }
+  scheduleAhead();
+}
+function stopHeroMusic() {
+  musicPlaying = false;
+  clearTimeout(musicTimerId);
+}
+
+// --- 自动拉扯 ---
+function autoPullCycle() {
+  if (!heroActive) return;
+
+  // 随机选角色
+  const prevChar = currentChar;
+  currentChar = Math.floor(Math.random() * memes.length);
+  if (currentChar !== prevChar) {
+    const m = memes[currentChar];
+    document.getElementById('charEmoji').textContent = m.emoji;
+    document.getElementById('charName').textContent = m.name;
+    const newTex = makeEmojiTexture(m.emoji);
+    if (material.map) material.map.dispose();
+    material.map = newTex;
+    material.needsUpdate = true;
+    for (let i = 0; i < deform.length; i++) { deform[i] = 0; velocity[i] = 0; }
+    applyVertexPos();
+  }
+
+  // 确保超软
+  currentMat = 2;
+  document.querySelectorAll('.mat').forEach(x => x.classList.remove('active'));
+  document.querySelector('.mat[data-i="2"]').classList.add('active');
+
+  // 随机选顶点
+  const vIdx = Math.floor(Math.random() * posAttr.count);
+  const rIdx = vIdx * 3;
+  const restX = restPos[rIdx], restY = restPos[rIdx+1], restZ = restPos[rIdx+2];
+
+  // 随机方向, 极限距离
+  const angle = Math.random() * Math.PI * 2;
+  const elev = (Math.random() - 0.5) * 0.8;
+  const pullDist = SPHERE_R * 2.8;
+  const tx = Math.cos(angle) * pullDist;
+  const ty = elev * pullDist;
+  const tz = Math.sin(angle) * pullDist * 0.4;
+
+  const cfg = matCfg[currentMat];
+  const radius = cfg.radius;
+  const r2 = radius * radius;
+  const strength = cfg.strength;
+
+  isAutoPulling = true;
+  const startTime = performance.now();
+  const pullDur = 1000;
+
+  function pullFrame() {
+    if (!heroActive) { isAutoPulling = false; return; }
+    const elapsed = performance.now() - startTime;
+    const p = Math.min(1, elapsed / pullDur);
+    const eased = p * p * (3 - 2 * p); // smoothstep
+    const defX = tx * eased, defY = ty * eased, defZ = tz * eased;
+
+    for (let i = 0; i < posAttr.count; i++) {
+      const idx = i * 3;
+      const dx = restPos[idx] - restX;
+      const dy = restPos[idx+1] - restY;
+      const dz = restPos[idx+2] - restZ;
+      const d2 = dx*dx + dy*dy + dz*dz;
+      if (d2 < r2 * 4) {
+        const falloff = Math.exp(-d2 / r2);
+        deform[idx] = defX * falloff * strength;
+        deform[idx+1] = defY * falloff * strength;
+        deform[idx+2] = defZ * falloff * strength;
+        velocity[idx] = 0; velocity[idx+1] = 0; velocity[idx+2] = 0;
+      }
+    }
+    applyVertexPos();
+    document.getElementById('deform').textContent = getDeformLevel() + '%';
+
+    if (p < 1) {
+      requestAnimationFrame(pullFrame);
+    } else {
+      // 松手! 给回弹初速度, 果冻疯狂弹
+      isAutoPulling = false;
+      const kick = 10 * strength;
+      for (let i = 0; i < posAttr.count; i++) {
+        const idx = i * 3;
+        const dx = restPos[idx] - restX;
+        const dy = restPos[idx+1] - restY;
+        const dz = restPos[idx+2] - restZ;
+        const d2 = dx*dx + dy*dy + dz*dz;
+        if (d2 < r2 * 4) {
+          const falloff = Math.exp(-d2 / r2);
+          velocity[idx] -= deform[idx] * falloff * kick;
+          velocity[idx+1] -= deform[idx+1] * falloff * kick;
+          velocity[idx+2] -= deform[idx+2] * falloff * kick;
+        }
+      }
+      playSound('boing');
+      // 等弹完再拉下一次
+      const wobbleWait = 2800;
+      const tid = setTimeout(autoPullCycle, wobbleWait);
+      heroTimers.push(tid);
+    }
+  }
+  pullFrame();
+}
+
+heroBtn.addEventListener('click', () => {
+  heroActive = !heroActive;
+  heroBtn.classList.toggle('on', heroActive);
+  if (heroActive) {
+    // 关掉橡皮泥模式
+    if (clayMode) {
+      clayMode = false;
+      claySwitch.classList.remove('on');
+    }
+    startHeroMusic();
+    autoPullCycle();
+  } else {
+    stopHeroMusic();
+    isAutoPulling = false;
+    heroTimers.forEach(t => clearTimeout(t));
+    heroTimers = [];
+  }
+});
+</script>
+</body>
+</html>
