@@ -55,11 +55,15 @@
 
     <!-- 🎮 Konami Code 彩蛋：按 上上下下左右左右 解锁秘密模式 -->
     <div class="konami-pad" id="konamiPad">
-        <button class="konami-btn" data-dir="up" title="上" aria-label="上">▲</button>
-        <div class="konami-row">
-            <button class="konami-btn" data-dir="left" title="左" aria-label="左">◀</button>
+        <span class="konami-hint">🎮 隐藏指令</span>
+        <div class="konami-dpad">
+            <button class="konami-btn" data-dir="up" title="上" aria-label="上">▲</button>
+            <div class="konami-row">
+                <button class="konami-btn" data-dir="left" title="左" aria-label="左">◀</button>
+                <button class="konami-btn konami-center" disabled>🎮</button>
+                <button class="konami-btn" data-dir="right" title="右" aria-label="右">▶</button>
+            </div>
             <button class="konami-btn" data-dir="down" title="下" aria-label="下">▼</button>
-            <button class="konami-btn" data-dir="right" title="右" aria-label="右">▶</button>
         </div>
     </div>
 
