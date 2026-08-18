@@ -441,39 +441,93 @@ document.addEventListener('keydown', (e) => {
     const overlay = document.getElementById('scareOverlay');
     if (!btn || !overlay) return;
 
-    let scareAudio = null;
+    let scareVideo = null;
     let scared = false;
+
+    // 拦截所有键盘事件, 防止 ESC/F11/Ctrl+W 等退出
+    function blockKeys(e) {
+        if (!scared) return;
+        e.preventDefault();
+        e.stopPropagation();
+        // ESC 退出全屏后立刻重新请求
+        if (e.key === 'Escape' || e.keyCode === 27) {
+            setTimeout(requestFs, 50);
+        }
+    }
+
+    // 强制全屏
+    function requestFs() {
+        const el = document.documentElement;
+        if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    }
+
+    function exitFs() {
+        if (document.fullscreenElement) {
+            document.exitFullscreen().catch(() => {});
+        } else if (document.webkitFullscreenElement) {
+            document.webkitExitFullscreen();
+        }
+    }
+
+    // 全屏被退出时立刻重新进入
+    function onFsChange() {
+        if (scared && !document.fullscreenElement && !document.webkitFullscreenElement) {
+            setTimeout(requestFs, 100);
+        }
+    }
 
     btn.addEventListener('click', () => {
         if (scared) return;
         scared = true;
-        // 屏幕震动
+        // 锁定页面滚动
+        document.body.classList.add('scare-locked');
+        // 屏幕震动(全屏大幅)
         document.body.classList.add('scare-shake');
-        setTimeout(() => document.body.classList.remove('scare-shake'), 400);
-        // 显示图片
+        setTimeout(() => document.body.classList.remove('scare-shake'), 1200);
+        // 强制全屏
+        requestFs();
+        // 显示视频
         overlay.classList.add('show');
-        // 播放音频(首次点击时创建音频对象, 6MB 延迟加载)
-        if (!scareAudio) {
-            scareAudio = new Audio('media/jumpscare.mp3');
-            scareAudio.preload = 'auto';
-            // 音频播放完毕后才关闭
-            scareAudio.addEventListener('ended', closeScare);
-            // 音频加载失败或播放失败时也关闭(防止卡死)
-            scareAudio.addEventListener('error', () => {
-                overlay.classList.remove('show');
-                setTimeout(() => { scared = false; }, 500);
+        // 覆盖层也来一次震动(全屏+缩放)
+        overlay.classList.add('shake-burst');
+        setTimeout(() => overlay.classList.remove('shake-burst'), 600);
+        // 拦截键盘 & 右键 & 全屏变化
+        document.addEventListener('keydown', blockKeys, true);
+        document.addEventListener('contextmenu', blockKeys, true);
+        document.addEventListener('fullscreenchange', onFsChange);
+        document.addEventListener('webkitfullscreenchange', onFsChange);
+        // 播放视频(首次点击时创建元素, 6MB 延迟加载)
+        if (!scareVideo) {
+            scareVideo = document.getElementById('scareVideo');
+            // 视频播放完毕后才关闭
+            scareVideo.addEventListener('ended', closeScare);
+            // 视频加载失败也关闭(防止卡死)
+            scareVideo.addEventListener('error', closeScare);
+        }
+        scareVideo.currentTime = 0;
+        scareVideo.muted = false;
+        const playPromise = scareVideo.play();
+        if (playPromise && playPromise.catch) {
+            playPromise.catch(() => {
+                // 播放被阻止, 5秒后自动关闭
+                setTimeout(closeScare, 5000);
             });
         }
-        scareAudio.currentTime = 0;
-        scareAudio.play().catch(() => {
-            // 播放被阻止, 直接关闭
-            overlay.classList.remove('show');
-            setTimeout(() => { scared = false; }, 500);
-        });
     });
 
     function closeScare() {
         overlay.classList.remove('show');
+        document.body.classList.remove('scare-locked');
+        document.removeEventListener('keydown', blockKeys, true);
+        document.removeEventListener('contextmenu', blockKeys, true);
+        document.removeEventListener('fullscreenchange', onFsChange);
+        document.removeEventListener('webkitfullscreenchange', onFsChange);
+        if (scareVideo) {
+            scareVideo.pause();
+            scareVideo.currentTime = 0;
+        }
+        exitFs();
         // 1.5秒后才能再点按钮
         setTimeout(() => { scared = false; }, 1500);
     }
