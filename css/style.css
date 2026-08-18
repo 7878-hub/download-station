@@ -393,9 +393,8 @@ body {
 .footer {
     text-align: center;
     padding: 20px;
-    color: var(--text-secondary);
+    color: #ffffff;
     font-size: 13px;
-    border-top: 1px solid var(--border);
     background: var(--card-bg);
 }
 
