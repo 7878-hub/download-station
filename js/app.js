@@ -261,3 +261,176 @@ document.getElementById('searchInput').addEventListener('input', (e) => {
 
 // 初始化
 loadFiles();
+
+/* ============================================================
+ * 🎮 Konami Code 彩蛋
+ * 顺序：上 上 下 下 左 右 左 右
+ * 触发后进入赛博朋克霓虹模式 + 粒子 + 8-bit 音效
+ * ============================================================ */
+
+const KONAMI_CODE = ['up', 'up', 'down', 'down', 'left', 'right', 'left', 'right'];
+let konamiProgress = 0;
+let neonActive = false;
+
+function handleKonamiInput(dir) {
+    if (neonActive) return; // 已激活则不再响应
+
+    const expected = KONAMI_CODE[konamiProgress];
+    const btn = document.querySelector('.konami-btn[data-dir="' + dir + '"]');
+
+    if (dir === expected) {
+        // ✅ 按对了
+        konamiProgress++;
+        if (btn) {
+            btn.classList.add('active');
+            setTimeout(() => btn.classList.remove('active'), 200);
+        }
+        if (konamiProgress === KONAMI_CODE.length) {
+            triggerEasterEgg();
+            konamiProgress = 0;
+        }
+    } else {
+        // ❌ 按错了，重置
+        konamiProgress = 0;
+        if (btn) {
+            btn.classList.add('wrong');
+            setTimeout(() => btn.classList.remove('wrong'), 350);
+        }
+    }
+}
+
+function triggerEasterEgg() {
+    if (neonActive) return;
+    neonActive = true;
+
+    // 1. 显示横幅
+    const banner = document.getElementById('easterBanner');
+    banner.classList.add('show');
+    setTimeout(() => banner.classList.remove('show'), 4500);
+
+    // 2. 进入霓虹模式
+    document.body.classList.add('neon-mode');
+
+    // 3. 启动粒子
+    startParticles();
+
+    // 4. 播放音效
+    playVictorySound();
+
+    // 5. 隐藏方向按钮（彩蛋已解锁，不需要了）
+    const pad = document.getElementById('konamiPad');
+    if (pad) pad.style.display = 'none';
+}
+
+/* ===== 粒子系统 ===== */
+let particleAnimationId = null;
+let particles = [];
+let particleCanvas = null;
+let particleCtx = null;
+
+function startParticles() {
+    particleCanvas = document.getElementById('particleCanvas');
+    particleCtx = particleCanvas.getContext('2d');
+    particleCanvas.width = window.innerWidth;
+    particleCanvas.height = window.innerHeight;
+
+    const colors = ['#ff00ff', '#00ffff', '#ffff00', '#ff0099', '#00ff88', '#ff6600'];
+    particles = [];
+    for (let i = 0; i < 90; i++) {
+        particles.push({
+            x: Math.random() * particleCanvas.width,
+            y: -20 - Math.random() * 300,
+            size: 2 + Math.random() * 4,
+            speed: 0.8 + Math.random() * 3,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            angle: Math.random() * Math.PI * 2,
+            spin: (Math.random() - 0.5) * 0.06,
+            drift: (Math.random() - 0.5) * 1.5
+        });
+    }
+
+    function animate() {
+        particleCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+        particles.forEach(p => {
+            p.y += p.speed;
+            p.angle += p.spin;
+            p.x += Math.sin(p.angle) * 0.8 + p.drift * 0.3;
+
+            particleCtx.save();
+            particleCtx.translate(p.x, p.y);
+            particleCtx.rotate(p.angle);
+            particleCtx.fillStyle = p.color;
+            particleCtx.shadowBlur = 15;
+            particleCtx.shadowColor = p.color;
+            particleCtx.fillRect(-p.size, -p.size / 2, p.size * 2, p.size);
+            particleCtx.restore();
+
+            if (p.y > particleCanvas.height + 20) {
+                p.y = -20;
+                p.x = Math.random() * particleCanvas.width;
+            }
+        });
+        particleAnimationId = requestAnimationFrame(animate);
+    }
+    animate();
+
+    window.addEventListener('resize', resizeParticleCanvas);
+}
+
+function resizeParticleCanvas() {
+    if (particleCanvas) {
+        particleCanvas.width = window.innerWidth;
+        particleCanvas.height = window.innerHeight;
+    }
+}
+
+/* ===== 8-bit 胜利音效（Web Audio API 生成） ===== */
+function playVictorySound() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const notes = [
+            { f: 523, d: 0.1 },   // C5
+            { f: 659, d: 0.1 },   // E5
+            { f: 784, d: 0.1 },   // G5
+            { f: 1047, d: 0.18 }, // C6
+            { f: 784, d: 0.1 },   // G5
+            { f: 1047, d: 0.1 },  // C6
+            { f: 1319, d: 0.35 }  // E6
+        ];
+        let t = ctx.currentTime;
+        notes.forEach(n => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'square';
+            osc.frequency.value = n.f;
+            gain.gain.setValueAtTime(0.12, t);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + n.d);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(t);
+            osc.stop(t + n.d);
+            t += n.d * 0.85;
+        });
+    } catch (e) {
+        // 音频不可用就静默跳过
+    }
+}
+
+/* ===== 绑定按钮 + 键盘 ===== */
+document.querySelectorAll('.konami-btn').forEach(btn => {
+    btn.addEventListener('click', () => handleKonamiInput(btn.dataset.dir));
+});
+
+document.addEventListener('keydown', (e) => {
+    const map = {
+        'ArrowUp': 'up',
+        'ArrowDown': 'down',
+        'ArrowLeft': 'left',
+        'ArrowRight': 'right'
+    };
+    const dir = map[e.key];
+    if (dir) {
+        e.preventDefault();
+        handleKonamiInput(dir);
+    }
+});
