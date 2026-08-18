@@ -452,87 +452,115 @@ body {
     align-items: center;
     gap: 8px;
     z-index: 9999;
-    background: var(--card-bg);
+    background: #ffffff;
     padding: 12px 20px 14px;
     border-radius: 18px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.12), 0 0 0 1px var(--border);
-    animation: konamiBreathe 3s ease-in-out infinite;
+    border: 1.5px solid #c7d2fe;
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.18), 0 2px 6px rgba(0,0,0,0.05);
+    animation: konamiBreathe 3.5s ease-in-out infinite;
 }
 @keyframes konamiBreathe {
-    0%, 100% { box-shadow: 0 4px 24px rgba(0,0,0,0.12), 0 0 0 1px var(--border); }
-    50% { box-shadow: 0 4px 28px rgba(79,109,245,0.25), 0 0 0 2px var(--primary); }
+    0%, 100% { box-shadow: 0 10px 30px rgba(99, 102, 241, 0.18), 0 2px 6px rgba(0,0,0,0.05); }
+    50%      { box-shadow: 0 12px 38px rgba(99, 102, 241, 0.35), 0 2px 6px rgba(0,0,0,0.05); }
 }
-.konami-hint {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text-secondary);
+.konami-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #6366f1;
     letter-spacing: 1px;
-    text-transform: uppercase;
+    padding-bottom: 6px;
+    border-bottom: 1px dashed #c7d2fe;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+.konami-title::before {
+    content: "🎮";
+    font-size: 13px;
 }
 .konami-dpad {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 5px;
+    margin-top: 4px;
 }
-.konami-row { display: flex; gap: 5px; align-items: center; }
+.konami-row {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
 .konami-btn {
-    width: 48px;
-    height: 48px;
-    border: 2px solid var(--border);
-    background: var(--card-bg);
-    border-radius: 12px;
+    width: 44px;
+    height: 44px;
+    border: 1.5px solid #c7d2fe;
+    background: #eef2ff;
+    border-radius: 10px;
     cursor: pointer;
-    font-size: 20px;
-    color: var(--primary);
+    color: #4f46e5;
     transition: all 0.15s ease;
     user-select: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    box-shadow: 0 2px 4px rgba(99, 102, 241, 0.08);
+    padding: 0;
 }
 .konami-btn:hover {
-    background: var(--primary);
-    color: #fff;
-    border-color: var(--primary);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 14px rgba(79,109,245,0.4);
+    background: #c7d2fe;
+    color: #312e81;
+    border-color: #6366f1;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
 }
 .konami-btn:active {
-    transform: scale(0.9);
+    transform: translateY(0) scale(0.94);
+}
+.konami-arrow {
+    width: 22px;
+    height: 22px;
+    display: block;
+}
+.konami-home {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #a5b4fc;
 }
 .konami-btn.active {
-    background: var(--primary);
-    color: #fff;
-    transform: scale(0.88);
-    box-shadow: 0 0 16px var(--primary);
+    background: #6366f1;
+    color: #ffffff;
+    border-color: #4338ca;
+    transform: scale(0.9);
+    box-shadow: 0 0 14px rgba(99, 102, 241, 0.55);
 }
 .konami-btn.wrong {
     background: #fee2e2;
     color: #ef4444;
     border-color: #ef4444;
-    animation: shake 0.35s ease;
-}
-.konami-center {
-    background: var(--primary-light);
-    border-color: transparent;
-    cursor: default;
-    font-size: 16px;
-}
-.konami-center:hover {
-    transform: none;
-    background: var(--primary-light);
-    color: var(--primary);
-    border-color: transparent;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    animation: shake 0.4s ease;
 }
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
-    20% { transform: translateX(-4px); }
-    40% { transform: translateX(4px); }
-    60% { transform: translateX(-3px); }
-    80% { transform: translateX(3px); }
+    20%       { transform: translateX(-6px); }
+    40%       { transform: translateX(6px); }
+    60%       { transform: translateX(-4px); }
+    80%       { transform: translateX(4px); }
+}
+
+/* 右上角手绘笔迹贴纸 */
+.konami-handwrite {
+    position: absolute;
+    top: -22px;
+    right: -36px;
+    pointer-events: none;
+    transform: rotate(-4deg);
+    filter: drop-shadow(0 1px 1.5px rgba(239, 68, 68, 0.25));
 }
 
 /* ===== 彩蛋横幅 ===== */
@@ -704,14 +732,18 @@ body.neon-mode .footer {
 
 body.neon-mode .konami-pad {
     opacity: 1;
-    background: rgba(20, 20, 45, 0.9) !important;
-    box-shadow: 0 0 20px rgba(0, 255, 229, 0.3), 0 0 0 1px #00ffff !important;
+    background: rgba(20, 20, 45, 0.92) !important;
+    border-color: #00ffff !important;
+    box-shadow: 0 0 28px rgba(0, 255, 229, 0.5), 0 0 0 1px #00ffff !important;
     animation: none !important;
 }
-body.neon-mode .konami-hint { color: #00ffff !important; }
+body.neon-mode .konami-title {
+    color: #00ffff !important;
+    border-bottom-color: #00ffff !important;
+}
 body.neon-mode .konami-btn {
     background: rgba(20, 20, 45, 0.9) !important;
-    border: 2px solid #00ffff !important;
+    border: 1.5px solid #00ffff !important;
     color: #00ffff !important;
     box-shadow: 0 0 8px rgba(0, 255, 229, 0.3);
 }
@@ -720,7 +752,4 @@ body.neon-mode .konami-btn:hover {
     color: #ff00ff !important;
     box-shadow: 0 0 12px rgba(255, 0, 255, 0.5);
 }
-body.neon-mode .konami-center {
-    background: rgba(255, 0, 255, 0.2) !important;
-    border-color: transparent !important;
-}
+body.neon-mode .konami-home { color: #ff00ff !important; }

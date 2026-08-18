@@ -55,15 +55,35 @@
 
     <!-- 🎮 Konami Code 彩蛋：按 上上下下左右左右 解锁秘密模式 -->
     <div class="konami-pad" id="konamiPad">
-        <span class="konami-hint">🎮 隐藏指令</span>
+        <div class="konami-title">隐藏指令</div>
         <div class="konami-dpad">
-            <button class="konami-btn" data-dir="up" title="上" aria-label="上">▲</button>
+            <button class="konami-btn" data-dir="up" title="上" aria-label="上">
+                <svg viewBox="0 0 24 24" class="konami-arrow"><path d="M12 5 L12 19 M5 12 L12 5 L19 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
             <div class="konami-row">
-                <button class="konami-btn" data-dir="left" title="左" aria-label="左">◀</button>
-                <button class="konami-btn konami-center" disabled>🎮</button>
-                <button class="konami-btn" data-dir="right" title="右" aria-label="右">▶</button>
+                <button class="konami-btn" data-dir="left" title="左" aria-label="左">
+                    <svg viewBox="0 0 24 24" class="konami-arrow"><path d="M19 12 L5 12 M12 5 L5 12 L12 19" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <div class="konami-home" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="20" height="20"><path d="M3 12 L12 3 L21 12 M5 10 L5 21 L19 21 L19 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <button class="konami-btn" data-dir="right" title="右" aria-label="右">
+                    <svg viewBox="0 0 24 24" class="konami-arrow"><path d="M5 12 L19 12 M12 5 L19 12 L12 19" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
             </div>
-            <button class="konami-btn" data-dir="down" title="下" aria-label="下">▼</button>
+            <button class="konami-btn" data-dir="down" title="下" aria-label="下">
+                <svg viewBox="0 0 24 24" class="konami-arrow"><path d="M12 19 L12 5 M5 12 L12 19 L19 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+        </div>
+        <!-- 右上角手绘风笔迹 ↑↓← -->
+        <div class="konami-handwrite" aria-hidden="true">
+            <svg viewBox="0 0 120 30" width="120" height="30">
+                <path d="M6 26 Q 10 4, 14 22 M 8 14 Q 12 6, 18 18" fill="none" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+                <path d="M28 5 Q 26 25, 34 22 M 30 8 L 34 5 L 36 11" fill="none" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+                <path d="M48 10 L 48 24 M 44 14 L 48 10 L 52 14 M 56 16 L 64 16 M 60 12 L 56 16 L 60 20" fill="none" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+                <path d="M70 18 L 70 24 M 67 21 L 70 18 L 73 21 M 76 16 L 84 16 M 80 12 L 76 16 L 80 20" fill="none" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+                <path d="M88 12 L 96 12 M 92 8 L 88 12 L 92 16 M 98 16 L 98 24 M 95 20 L 98 16 L 101 20" fill="none" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+            </svg>
         </div>
     </div>
 
