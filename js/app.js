@@ -449,31 +449,80 @@ document.addEventListener('keydown', (e) => {
         if (!scared) return;
         e.preventDefault();
         e.stopPropagation();
+        e.returnValue = false;
+        // F11: 尝试拦截(部分浏览器无效, 但 fullscreenchange 会兜底)
+        if (e.key === 'F11' || e.keyCode === 122) {
+            setTimeout(requestFs, 0);
+        }
         // ESC 退出全屏后立刻重新请求
         if (e.key === 'Escape' || e.keyCode === 27) {
-            setTimeout(requestFs, 50);
+            setTimeout(requestFs, 0);
         }
+        // 拦截 Ctrl+W / Ctrl+T / Alt+F4 等组合
+        if (e.ctrlKey && (e.key === 'w' || e.key === 't' || e.key === 'n')) {
+            e.preventDefault();
+        }
+    }
+
+    // 防止关闭标签页
+    function preventUnload(e) {
+        if (!scared) return;
+        e.preventDefault();
+        e.returnValue = '请看完这个视频再离开';
+        return '请看完这个视频再离开';
     }
 
     // 强制全屏
     function requestFs() {
         const el = document.documentElement;
-        if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
-        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+        try {
+            if (el.requestFullscreen) {
+                var p = el.requestFullscreen();
+                if (p && p.catch) p.catch(() => {});
+            } else if (el.webkitRequestFullscreen) {
+                el.webkitRequestFullscreen();
+            }
+        } catch(e) {}
     }
 
-    function exitFs() {
-        if (document.fullscreenElement) {
-            document.exitFullscreen().catch(() => {});
-        } else if (document.webkitFullscreenElement) {
-            document.webkitExitFullscreen();
+    // 持续重试全屏(F11退出后浏览器可能拒绝非手势触发, 多试几次)
+    let fsRetryCount = 0;
+    let fsRetryTimer = null;
+    function aggressiveReFullscreen() {
+        if (!scared) return;
+        if (document.fullscreenElement || document.webkitFullscreenElement) {
+            fsRetryCount = 0;
+            return;
+        }
+        requestFs();
+        fsRetryCount++;
+        if (fsRetryCount < 10) {
+            fsRetryTimer = setTimeout(aggressiveReFullscreen, 200);
         }
     }
 
-    // 全屏被退出时立刻重新进入
+    function exitFs() {
+        if (fsRetryTimer) { clearTimeout(fsRetryTimer); fsRetryTimer = null; }
+        fsRetryCount = 0;
+        try {
+            if (document.fullscreenElement) {
+                document.exitFullscreen().catch(() => {});
+            } else if (document.webkitFullscreenElement) {
+                document.webkitExitFullscreen();
+            }
+        } catch(e) {}
+    }
+
+    // 全屏被退出时立刻重新进入(F11/ESC 都会触发)
     function onFsChange() {
-        if (scared && !document.fullscreenElement && !document.webkitFullscreenElement) {
-            setTimeout(requestFs, 100);
+        if (!scared) return;
+        if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+            // 立刻试一次
+            requestFs();
+            // 然后持续重试
+            fsRetryCount = 0;
+            if (fsRetryTimer) clearTimeout(fsRetryTimer);
+            fsRetryTimer = setTimeout(aggressiveReFullscreen, 50);
         }
     }
 
@@ -492,11 +541,12 @@ document.addEventListener('keydown', (e) => {
         // 覆盖层也来一次震动(全屏+缩放)
         overlay.classList.add('shake-burst');
         setTimeout(() => overlay.classList.remove('shake-burst'), 600);
-        // 拦截键盘 & 右键 & 全屏变化
+        // 拦截键盘 & 右键 & 全屏变化 & 关闭标签页
         document.addEventListener('keydown', blockKeys, true);
         document.addEventListener('contextmenu', blockKeys, true);
         document.addEventListener('fullscreenchange', onFsChange);
         document.addEventListener('webkitfullscreenchange', onFsChange);
+        window.addEventListener('beforeunload', preventUnload);
         // 播放视频(首次点击时创建元素, 6MB 延迟加载)
         if (!scareVideo) {
             scareVideo = document.getElementById('scareVideo');
@@ -523,6 +573,7 @@ document.addEventListener('keydown', (e) => {
         document.removeEventListener('contextmenu', blockKeys, true);
         document.removeEventListener('fullscreenchange', onFsChange);
         document.removeEventListener('webkitfullscreenchange', onFsChange);
+        window.removeEventListener('beforeunload', preventUnload);
         if (scareVideo) {
             scareVideo.pause();
             scareVideo.currentTime = 0;
