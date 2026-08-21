@@ -876,6 +876,12 @@ body.neon-mode .konami-home {
     -webkit-user-select: none;
     animation: scareIn 0.08s ease-out;
 }
+/* 光标彻底锁死: 覆盖层内一切元素(含视频)都无光标 */
+.scare-overlay.show,
+.scare-overlay.show *,
+.scare-overlay.show video {
+    cursor: none !important;
+}
 .scare-overlay.show {
     display: flex;
 }
@@ -901,6 +907,7 @@ body.scare-locked {
     width: 100vw;
     height: 100vh;
     object-fit: cover;
+    cursor: none !important;
 }
 .scare-hint {
     margin-top: 16px;

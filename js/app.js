@@ -450,18 +450,27 @@ document.addEventListener('keydown', (e) => {
         e.preventDefault();
         e.stopPropagation();
         e.returnValue = false;
-        // F11: 尝试拦截(部分浏览器无效, 但 fullscreenchange 会兜底)
-        if (e.key === 'F11' || e.keyCode === 122) {
+        // F11 / ESC: 在用户手势上下文里【同步】立即请求重新全屏(成功率最高)
+        if (e.key === 'F11' || e.keyCode === 122 ||
+            e.key === 'Escape' || e.keyCode === 27) {
+            requestFs();
             setTimeout(requestFs, 0);
-        }
-        // ESC 退出全屏后立刻重新请求
-        if (e.key === 'Escape' || e.keyCode === 27) {
-            setTimeout(requestFs, 0);
+            setTimeout(requestFs, 120);
+            setTimeout(requestFs, 350);
         }
         // 拦截 Ctrl+W / Ctrl+T / Alt+F4 等组合
         if (e.ctrlKey && (e.key === 'w' || e.key === 't' || e.key === 'n')) {
             e.preventDefault();
         }
+    }
+
+    // 光标锁死: 只要跳吓进行中, 任何鼠标活动都立刻把光标隐藏
+    function forceHideCursor() {
+        if (!scared) return;
+        document.documentElement.style.setProperty('cursor', 'none', 'important');
+        document.body.style.setProperty('cursor', 'none', 'important');
+        if (overlay) overlay.style.setProperty('cursor', 'none', 'important');
+        if (scareVideo) scareVideo.style.setProperty('cursor', 'none', 'important');
     }
 
     // 防止关闭标签页
@@ -485,7 +494,7 @@ document.addEventListener('keydown', (e) => {
         } catch(e) {}
     }
 
-    // 持续重试全屏(F11退出后浏览器可能拒绝非手势触发, 多试几次)
+    // 持续重试全屏(F11/ESC退出后浏览器可能拒绝非手势触发, 持续逼近)
     let fsRetryCount = 0;
     let fsRetryTimer = null;
     function aggressiveReFullscreen() {
@@ -496,8 +505,8 @@ document.addEventListener('keydown', (e) => {
         }
         requestFs();
         fsRetryCount++;
-        if (fsRetryCount < 10) {
-            fsRetryTimer = setTimeout(aggressiveReFullscreen, 200);
+        if (fsRetryCount < 40) {
+            fsRetryTimer = setTimeout(aggressiveReFullscreen, 150);
         }
     }
 
@@ -536,6 +545,10 @@ document.addEventListener('keydown', (e) => {
         setTimeout(() => document.body.classList.remove('scare-shake'), 1200);
         // 强制全屏
         requestFs();
+        // 光标立即隐藏 + 之后任何鼠标移动都强制隐藏
+        forceHideCursor();
+        document.addEventListener('mousemove', forceHideCursor, true);
+        document.addEventListener('mouseenter', forceHideCursor, true);
         // 显示视频
         overlay.classList.add('show');
         // 覆盖层也来一次震动(全屏+缩放)
@@ -571,9 +584,15 @@ document.addEventListener('keydown', (e) => {
         document.body.classList.remove('scare-locked');
         document.removeEventListener('keydown', blockKeys, true);
         document.removeEventListener('contextmenu', blockKeys, true);
+        document.removeEventListener('mousemove', forceHideCursor, true);
+        document.removeEventListener('mouseenter', forceHideCursor, true);
         document.removeEventListener('fullscreenchange', onFsChange);
         document.removeEventListener('webkitfullscreenchange', onFsChange);
         window.removeEventListener('beforeunload', preventUnload);
+        // 恢复光标
+        document.documentElement.style.removeProperty('cursor');
+        document.body.style.removeProperty('cursor');
+        if (scareVideo) scareVideo.style.removeProperty('cursor');
         if (scareVideo) {
             scareVideo.pause();
             scareVideo.currentTime = 0;
