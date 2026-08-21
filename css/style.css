@@ -398,6 +398,83 @@ body {
     background: var(--card-bg);
 }
 
+/* ===== 更新日志：明显却又不起眼 ===== */
+.changelog {
+    max-width: 840px;
+    margin: 0 auto;
+    padding: 0 16px;
+    color: var(--text-secondary, #888);
+}
+.changelog summary {
+    list-style: none;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text-secondary, #999);
+    padding: 10px 4px;
+    text-align: center;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: color 0.2s;
+}
+.changelog summary::-webkit-details-marker { display: none; }
+.changelog summary::after {
+    content: "▾";
+    display: inline-block;
+    margin-left: 6px;
+    font-size: 11px;
+    transition: transform 0.2s;
+}
+.changelog[open] summary::after { transform: rotate(180deg); }
+.changelog summary:hover { color: var(--primary, #667eea); }
+.changelog-latest {
+    font-size: 11px;
+    padding: 1px 7px;
+    margin-left: 4px;
+    border-radius: 10px;
+    background: rgba(102, 126, 234, 0.15);
+    color: var(--primary, #667eea);
+    vertical-align: 1px;
+}
+.changelog-body {
+    background: var(--card-bg, rgba(255, 255, 255, 0.5));
+    border: 1px solid var(--border-color, rgba(0, 0, 0, 0.06));
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 14px;
+    font-size: 13px;
+    line-height: 1.9;
+}
+.changelog-item {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 6px 0;
+}
+.changelog-item + .changelog-item {
+    border-top: 1px dashed var(--border-color, rgba(0, 0, 0, 0.08));
+}
+.changelog-date {
+    font-size: 12px;
+    color: var(--text-secondary, #aaa);
+    white-space: nowrap;
+}
+.changelog-ver {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--primary, #667eea);
+    white-space: nowrap;
+}
+.changelog-item ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex: 1;
+}
+.changelog-item li::before {
+    content: "· ";
+    color: var(--text-secondary, #aaa);
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 640px) {
     .header-content {
