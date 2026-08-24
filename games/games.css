@@ -1,0 +1,150 @@
+/* ===== 游戏厅共享样式 —— 与下载站统一视觉 ===== */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root{
+  --primary:#4f6df5;
+  --primary-dark:#3b54d4;
+  --primary-light:#e8edff;
+  --bg:#f0f2f5;
+  --card-bg:#ffffff;
+  --text:#1a1a2e;
+  --text-secondary:#6b7280;
+  --border:#e4e7eb;
+  --success:#22c55e;
+  --warning:#f59e0b;
+  --danger:#ef4444;
+  --radius:12px;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.06);
+  --shadow-hover:0 8px 25px rgba(0,0,0,.12),0 2px 6px rgba(0,0,0,.08);
+  --transition:.25s cubic-bezier(.4,0,.2,1);
+}
+
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  display:flex; flex-direction:column; align-items:center;
+  padding:0 14px 40px;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+}
+
+/* 顶栏 */
+.game-topbar{
+  width:100%; max-width:560px;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:10px; margin:18px auto 14px;
+}
+.back-btn{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:8px 14px; border:1.5px solid var(--border); border-radius:20px;
+  background:var(--card-bg); color:var(--text-secondary);
+  font-size:13px; font-weight:600; cursor:pointer; text-decoration:none;
+  transition:var(--transition);
+}
+.back-btn:hover{ border-color:var(--primary); color:var(--primary); transform:translateX(-2px); }
+.game-title{ font-size:18px; font-weight:700; }
+.score-badge{
+  padding:6px 14px; border-radius:20px; background:var(--primary-light);
+  color:var(--primary); font-size:13px; font-weight:700;
+}
+.score-badge small{ font-weight:500; opacity:.7; }
+
+/* 舞台 */
+.game-stage{
+  background:var(--card-bg); border:1px solid var(--border);
+  border-radius:var(--radius); box-shadow:var(--shadow);
+  padding:14px; margin:0 auto;
+  display:flex; flex-direction:column; align-items:center; gap:12px;
+  position:relative;
+}
+canvas{
+  display:block; background:#0f1020; border-radius:8px;
+  touch-action:none; max-width:100%;
+}
+.game-hint{ font-size:12px; color:var(--text-secondary); text-align:center; line-height:1.6; }
+.game-hint b{ color:var(--primary); }
+
+/* 通用按钮 */
+.btn{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:9px 18px; border:none; border-radius:8px;
+  background:var(--primary); color:#fff; font-size:13px; font-weight:600;
+  cursor:pointer; transition:var(--transition);
+}
+.btn:hover{ background:var(--primary-dark); transform:translateY(-1px); }
+.btn:active{ transform:scale(.97); }
+.btn.ghost{ background:var(--card-bg); color:var(--primary); border:1.5px solid var(--primary); }
+.btn.danger{ background:var(--danger); }
+
+/* 覆盖层（开始/结束） */
+.overlay{
+  position:absolute; inset:0; border-radius:var(--radius);
+  background:rgba(15,16,32,.86); color:#fff;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:12px; text-align:center; z-index:5;
+  backdrop-filter:blur(3px);
+}
+.overlay h2{ font-size:24px; }
+.overlay p{ font-size:13px; opacity:.85; max-width:260px; line-height:1.6; }
+.overlay .btn{ font-size:14px; padding:11px 26px; }
+
+/* 移动端方向键 */
+.dpad{ display:none; grid-template-columns:repeat(3,54px); grid-template-rows:repeat(3,54px); gap:8px; margin-top:6px; }
+.dpad button{
+  border:1px solid var(--border); border-radius:12px; background:var(--card-bg);
+  font-size:22px; color:var(--primary); cursor:pointer; transition:var(--transition);
+}
+.dpad button:active{ background:var(--primary-light); transform:scale(.94); }
+.dpad .up{ grid-area:1/2; } .dpad .left{ grid-area:2/1; }
+.dpad .right{ grid-area:2/3; } .dpad .down{ grid-area:3/2; }
+@media (hover:none) and (pointer:coarse){
+  .dpad{ display:grid; }
+  .desktop-only{ display:none; }
+}
+
+/* ===== 游戏厅首页 ===== */
+.hub-wrap{ width:100%; max-width:1100px; margin:0 auto; padding:0 4px; }
+.hub-header{
+  background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);
+  color:#fff; border-radius:16px; padding:26px 24px; margin:22px 0 18px;
+  box-shadow:0 6px 22px rgba(79,109,245,.28);
+  position:relative; overflow:hidden;
+}
+.hub-header h1{ font-size:26px; font-weight:800; letter-spacing:.5px; }
+.hub-header p{ margin-top:6px; font-size:13px; opacity:.9; }
+.hub-header .arcade{ position:absolute; right:18px; top:50%; transform:translateY(-50%); font-size:64px; opacity:.18; }
+.hub-back{ position:absolute; top:14px; left:14px; }
+.hub-back a{
+  color:#fff; text-decoration:none; font-size:13px; font-weight:600;
+  background:rgba(255,255,255,.18); padding:6px 14px; border-radius:20px;
+  transition:var(--transition);
+}
+.hub-back a:hover{ background:rgba(255,255,255,.32); }
+
+.game-grid{
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+  gap:16px;
+}
+.game-card{
+  background:var(--card-bg); border:1px solid var(--border); border-radius:var(--radius);
+  padding:18px 16px; text-decoration:none; color:var(--text); cursor:pointer;
+  transition:var(--transition); display:flex; flex-direction:column; align-items:center; gap:10px;
+  position:relative; overflow:hidden; animation:fadeInUp .4s ease;
+}
+@keyframes fadeInUp{ from{opacity:0;transform:translateY(12px);} to{opacity:1;transform:translateY(0);} }
+.game-card::before{
+  content:''; position:absolute; top:0; left:0; width:100%; height:4px;
+  background:var(--gc,var(--primary)); opacity:.9;
+}
+.game-card:hover{ box-shadow:var(--shadow-hover); transform:translateY(-3px); border-color:var(--gc,var(--primary)); }
+.game-card .emoji{ font-size:40px; line-height:1; filter:drop-shadow(0 2px 4px rgba(0,0,0,.12)); }
+.game-card .name{ font-size:14px; font-weight:700; }
+.game-card .desc{ font-size:11px; color:var(--text-secondary); text-align:center; line-height:1.5; }
+.game-card .play{
+  margin-top:2px; font-size:11px; font-weight:600; color:var(--gc,var(--primary));
+  padding:3px 12px; border-radius:12px; background:var(--gl,var(--primary-light));
+}
+
+.hub-footer{ text-align:center; margin-top:30px; font-size:12px; color:var(--text-secondary); }

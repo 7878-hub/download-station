@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>游戏厅 · 文件下载站</title>
+<link rel="stylesheet" href="games.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+</head>
+<body>
+<div class="hub-wrap">
+
+  <header class="hub-header">
+    <div class="hub-back"><a href="../index.html">← 返回下载站</a></div>
+    <span class="arcade">🕹️</span>
+    <h1>游戏厅</h1>
+    <p>纯前端，无需联网，点开即玩 · 共 12 款</p>
+  </header>
+
+  <div class="game-grid" id="grid"></div>
+
+  <div class="hub-footer">所有游戏均在本地浏览器运行 · 不收集任何数据 🎮</div>
+</div>
+
+<script>
+const GAMES = [
+  {f:'snake.html',      e:'🐍', n:'贪吃蛇',     d:'吃豆变长，别撞墙别咬自己', c:'#22c55e', l:'#dcfce7'},
+  {f:'2048.html',       e:'🔢', n:'2048',       d:'滑动合并，凑出 2048',     c:'#f59e0b', l:'#fef3c7'},
+  {f:'tetris.html',     e:'🧩', n:'俄罗斯方块', d:'经典七块，消行得分',     c:'#6366f1', l:'#e0e7ff'},
+  {f:'breakout.html',   e:'🧱', n:'打砖块',     d:'弹球击碎所有砖块',       c:'#ef4444', l:'#fee2e2'},
+  {f:'minesweeper.html',e:'💣', n:'扫雷',        d:'推理排雷，别踩到雷',     c:'#64748b', l:'#f1f5f9'},
+  {f:'memory.html',     e:'🃏', n:'记忆翻牌',    d:'翻开配对，考验记忆力',   c:'#8b5cf6', l:'#ede9fe'},
+  {f:'tictactoe.html',  e:'⭕', n:'井字棋',      d:'人机对战三连成线',       c:'#ec4899', l:'#fce7f3'},
+  {f:'pong.html',       e:'🏓', n:'弹球对战',    d:'人机弹球，先到 5 分',    c:'#06b6d4', l:'#cffafe'},
+  {f:'flappy.html',     e:'🐤', n:'飞鸟跳跃',    d:'点击扇翅，穿越管道',     c:'#fbbf24', l:'#fef9c3'},
+  {f:'dinorun.html',    e:'🦖', n:'小恐龙跑酷',  d:'跳跃躲仙人掌与飞鸟',     c:'#10b981', l:'#d1fae5'},
+  {f:'puzzle15.html',   e:'🧮', n:'数字华容道',  d:'滑动还原 1~15',          c:'#3b82f6', l:'#dbeafe'},
+  {f:'whack.html',      e:'🔨', n:'打地鼠',      d:'30 秒内敲到尽量多地鼠',   c:'#f97316', l:'#ffedd5'},
+];
+
+document.getElementById('grid').innerHTML = GAMES.map(g => `
+  <a class="game-card" href="${g.f}" style="--gc:${g.c};--gl:${g.l}">
+    <span class="emoji">${g.e}</span>
+    <span class="name">${g.n}</span>
+    <span class="desc">${g.d}</span>
+    <span class="play">▶ 开始</span>
+  </a>
+`).join('');
+</script>
+</body>
+</html>

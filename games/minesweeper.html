@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>扫雷 · 游戏厅</title>
+<link rel="stylesheet" href="games.css">
+<style>
+#field{ display:grid; grid-template-columns:repeat(10,1fr); gap:2px; background:#9ca3af; padding:2px; border-radius:8px; width:min(92vw,360px); }
+.c{ width:100%; aspect-ratio:1; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px; background:#e5e7eb; color:#1a1a2e; cursor:pointer; border-radius:3px; transition:background .1s; user-select:none; }
+.c:active{ background:#d1d5db; }
+.c.revealed{ background:#f9fafb; }
+.c.mine{ background:#ef4444; }
+.c.flag{ background:#fde68a; }
+.c.n1{color:#3b82f6}.c.n2{color:#22c55e}.c.n3{color:#ef4444}.c.n4{color:#8b5cf6}.c.n5{color:#f59e0b}.c.n6{color:#06b6d4}.c.n7{color:#1a1a2e}.c.n8{color:#6b7280}
+</style>
+</head>
+<body>
+<div class="game-topbar">
+  <a class="back-btn" href="index.html">← 游戏厅</a>
+  <span class="game-title">💣 扫雷</span>
+  <span class="score-badge"><small>剩余雷</small> <b id="mines">10</b></span>
+</div>
+<div class="game-stage">
+  <div id="field"></div>
+  <div class="game-hint"><b>左键</b>翻开 · <b>右键 / 长按</b>插旗</div>
+  <div class="overlay" id="ov">
+    <h2 id="ovTitle">💣 扫雷</h2>
+    <p id="ovMsg">推理排雷，别踩到雷。10×10 共 10 颗雷。</p>
+    <button class="btn" id="ovBtn">开始游戏</button>
+  </div>
+</div>
+<script>
+const N=10, MINES=10;
+let grid, revealed, flagged, dead, won, started;
+const field=document.getElementById('field');
+const minesEl=document.getElementById('mines');
+function build(){
+  grid=Array.from({length:N},()=>Array(N).fill(0));
+  revealed=Array.from({length:N},()=>Array(N).fill(false));
+  flagged=Array.from({length:N},()=>Array(N).fill(false));
+  let placed=0; while(placed<MINES){ const r=(Math.random()*N)|0,c=(Math.random()*N)|0; if(grid[r][c]!==-1){grid[r][c]=-1;placed++;} }
+  for(let r=0;r<N;r++)for(let c=0;c<N;c++){ if(grid[r][c]===-1)continue; let n=0; for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){ const nr=r+dr,nc=c+dc; if(nr>=0&&nr<N&&nc>=0&&nc<N&&grid[nr][nc]===-1)n++; } grid[r][c]=n; }
+}
+function render(){
+  field.innerHTML=''; 
+  for(let r=0;r<N;r++)for(let c=0;c<N;c++){
+    const d=document.createElement('div'); d.className='c'; d.dataset.r=r; d.dataset.c=c;
+    if(revealed[r][c]){ d.classList.add('revealed'); if(grid[r][c]===-1){ d.classList.add('mine'); d.textContent='💣'; } else if(grid[r][c]>0){ d.classList.add('n'+grid[r][c]); d.textContent=grid[r][c]; } }
+    else if(flagged[r][c]){ d.classList.add('flag'); d.textContent='🚩'; }
+    field.appendChild(d);
+  }
+  const flags=flagged.flat().filter(Boolean).length; minesEl.textContent=MINES-flags;
+}
+function reveal(r,c){
+  if(r<0||r>=N||c<0||c>=N||revealed[r][c]||flagged[r][c])return;
+  revealed[r][c]=true;
+  if(grid[r][c]===-1){ dead=true; // 揭开所有雷
+    for(let i=0;i<N;i++)for(let j=0;j<N;j++)if(grid[i][j]===-1)revealed[i][j]=true; return; }
+  if(grid[r][c]===0){ for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++)reveal(r+dr,c+dc); }
+}
+function checkWin(){ let unrev=0; for(let r=0;r<N;r++)for(let c=0;c<N;c++)if(!revealed[r][c])unrev++; if(unrev===MINES){ won=true; } }
+function click(r,c){ if(dead||won||revealed[r][c])return; reveal(r,c); checkWin(); render(); if(dead)over(); else if(won)win(); }
+function flag(r,c){ if(dead||won||revealed[r][c])return; flagged[r][c]=!flagged[r][c]; render(); }
+function over(){ document.getElementById('ovTitle').textContent='💥 踩到雷了'; document.getElementById('ovMsg').innerHTML='再来一次？'; document.getElementById('ovBtn').textContent='再来一局'; document.getElementById('ov').style.display='flex'; }
+function win(){ document.getElementById('ovTitle').textContent='🎉 排雷完成'; document.getElementById('ovMsg').innerHTML='全部安全区域已翻开！'; document.getElementById('ovBtn').textContent='再来一局'; document.getElementById('ov').style.display='flex'; }
+function start(){ build(); dead=false; won=false; document.getElementById('ov').style.display='none'; render(); }
+document.getElementById('ovBtn').onclick=start;
+field.addEventListener('click',e=>{ const d=e.target.closest('.c'); if(!d)return; click(+d.dataset.r,+d.dataset.c); });
+field.addEventListener('contextmenu',e=>{ e.preventDefault(); const d=e.target.closest('.c'); if(!d)return; flag(+d.dataset.r,+d.dataset.c); });
+// 长按插旗（移动端）
+let lt=0,ltc=null; field.addEventListener('touchstart',e=>{ const d=e.target.closest('.c'); if(!d)return; ltc=d; lt=setTimeout(()=>{flag(+d.dataset.r,+d.dataset.c);ltc=null;},450); },{passive:true});
+field.addEventListener('touchend',e=>{ if(lt)clearTimeout(lt); if(ltc){ click(+ltc.dataset.r,+ltc.dataset.c); } ltc=null; },{passive:true});
+field.addEventListener('touchmove',()=>{ if(lt)clearTimeout(lt); ltc=null; },{passive:true});
+</script>
+</body>
+</html>

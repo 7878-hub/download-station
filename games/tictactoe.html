@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>井字棋 · 游戏厅</title>
+<link rel="stylesheet" href="games.css">
+<style>
+#board{ display:grid; grid-template-columns:repeat(3,1fr); gap:6px; width:min(70vw,300px); }
+.cell{ aspect-ratio:1; background:#fff; border:1px solid #e4e7eb; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:48px; font-weight:800; cursor:pointer; transition:background .15s; }
+.cell:hover{ background:#f3f4f6; }
+.cell.x{ color:#ec4899; } .cell.o{ color:#4f6df5; }
+.cell.win{ background:#fee2e2; }
+.score-row{ display:flex; gap:10px; font-size:13px; color:var(--text-secondary); }
+.score-row b{ color:var(--primary); }
+</style>
+</head>
+<body>
+<div class="game-topbar">
+  <a class="back-btn" href="index.html">← 游戏厅</a>
+  <span class="game-title">⭕ 井字棋</span>
+  <span class="score-badge"><small>胜</small><b id="ws">0</b>/<small>负</small><b id="ls">0</b>/<small>平</small><b id="ts">0</b></span>
+</div>
+<div class="game-stage">
+  <div class="score-row" style="margin-bottom:8px"><span>你 = <b>❌</b> · AI = <b>⭕</b></span><span style="margin-left:auto" id="turn">轮到你</span></div>
+  <div id="board"></div>
+  <div class="game-hint">三连成线即胜，AI 用了 Minimax，很难赢</div>
+  <div class="overlay" id="ov">
+    <h2 id="ovTitle">⭕ 井字棋</h2>
+    <p id="ovMsg">人机对战，三连成线。</p>
+    <button class="btn" id="ovBtn">开始游戏</button>
+  </div>
+</div>
+<script>
+let b, turn, state, ws=0,ls=0,ts=0;
+const board=document.getElementById('board');
+const LINES=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+function build(){ b=Array(9).fill(''); board.innerHTML=''; for(let i=0;i<9;i++){const c=document.createElement('div');c.className='cell';c.dataset.i=i;board.appendChild(c);} }
+function render(){ for(let i=0;i<9;i++){const c=board.children[i]; c.textContent=b[i]; c.className='cell '+(b[i]==='X'?'x':b[i]==='O'?'o':'');} }
+function winner(){ for(const L of LINES){ const[a,b2,cc]=L; if(b[a]&&b[a]===b[b2]&&b[a]===b[cc])return b[a]; } if(b.every(x=>x))return 'tie'; return null; }
+function bestMove(){ let best=-Infinity,move=-1; for(let i=0;i<9;i++){ if(!b[i]){ b[i]='O'; const s=minimax(b,0,false); b[i]=''; if(s>best){best=s;move=i;} } } return move; }
+function minimax(bd,depth,maxing){ const w=winner2(bd); if(w==='O')return 10-depth; if(w==='X')return depth-10; if(w==='tie')return 0;
+  if(maxing){ let best=-Infinity; for(let i=0;i<9;i++){ if(!bd[i]){ bd[i]='O'; best=Math.max(best,minimax(bd,depth+1,false)); bd[i]=''; } } return best; }
+  else{ let best=Infinity; for(let i=0;i<9;i++){ if(!bd[i]){ bd[i]='X'; best=Math.min(best,minimax(bd,depth+1,true)); bd[i]=''; } } return best; } }
+function winner2(bd){ for(const L of LINES){ const[a,b2,cc]=L; if(bd[a]&&bd[a]===bd[b2]&&bd[a]===bd[cc])return bd[a]; } if(bd.every(x=>x))return 'tie'; return null; }
+function play(i){ if(state!=='play'||b[i])return; b[i]='X'; render(); const w=winner(); if(w){ end(w); return; } document.getElementById('turn').textContent='AI 思考中…'; setTimeout(()=>{ const m=bestMove(); if(m>=0){ b[m]='O'; render(); const w2=winner(); if(w2){ end(w2); } else document.getElementById('turn').textContent='轮到你'; } },300); }
+function end(w){ state='over'; let t,m; if(w==='X'){ws++;t='🎉 你赢了！';m='真厉害，再来一局？';} else if(w==='O'){ls++;t='😅 AI 赢了';m='再来挑战？';} else {ts++;t='🤝 平局';m='势均力敌，再来？';} document.getElementById('ovTitle').textContent=t; document.getElementById('ovMsg').innerHTML=m; document.getElementById('ovBtn').textContent='再来一局'; document.getElementById('ov').style.display='flex'; document.getElementById('ws').textContent=ws; document.getElementById('ls').textContent=ls; document.getElementById('ts').textContent=ts; }
+function start(){ build(); state='play'; document.getElementById('ov').style.display='none'; document.getElementById('turn').textContent='轮到你'; }
+document.getElementById('ovBtn').onclick=start;
+board.addEventListener('click',e=>{ const c=e.target.closest('.cell'); if(c)play(+c.dataset.i); });
+</script>
+</body>
+</html>

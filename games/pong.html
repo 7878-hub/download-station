@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>弹球对战 · 游戏厅</title>
+<link rel="stylesheet" href="games.css">
+</head>
+<body>
+<div class="game-topbar">
+  <a class="back-btn" href="index.html">← 游戏厅</a>
+  <span class="game-title">🏓 弹球对战</span>
+  <span class="score-badge"><b id="ps">0</b> : <b id="as">0</b></span>
+</div>
+<div class="game-stage">
+  <canvas id="cv" width="420" height="320"></canvas>
+  <div class="game-hint"><b>鼠标 / 手指 / ↑↓</b> 控制左挡板 · 先到 5 分胜</div>
+  <div class="overlay" id="ov">
+    <h2 id="ovTitle">🏓 弹球对战</h2>
+    <p id="ovMsg">人机对战，先到 5 分获胜。</p>
+    <button class="btn" id="ovBtn">开始游戏</button>
+  </div>
+</div>
+<script>
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const W=cv.width, H=cv.height, PH=56, PW=8;
+let py, ay, ball, ps, as, raf, state;
+const psEl=document.getElementById('ps'), asEl=document.getElementById('as');
+function reset(){ py=ay=(H-PH)/2; ps=0; as=0; psEl.textContent=0; asEl.textContent=0; serve(); }
+function serve(){ ball={x:W/2,y:H/2,vx:Math.random()<.5?3.6:-3.6,vy:(Math.random()*2-1)*3}; }
+function draw(){ ctx.fillStyle='#0f1020'; ctx.fillRect(0,0,W,H); ctx.strokeStyle='rgba(255,255,255,.15)'; ctx.setLineDash([6,8]); ctx.beginPath(); ctx.moveTo(W/2,0); ctx.lineTo(W/2,H); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle='#ec4899'; ctx.fillRect(0,py,PW,PH); ctx.fillStyle='#4f6df5'; ctx.fillRect(W-PW,ay,PW,PH); ctx.fillStyle='#fbbf24'; ctx.beginPath(); ctx.arc(ball.x,ball.y,7,0,7); ctx.fill(); }
+function update(){ if(state!=='play')return; ball.x+=ball.vx; ball.y+=ball.vy;
+  if(ball.y<7||ball.y>H-7)ball.vy*=-1;
+  // 玩家挡板
+  if(ball.vx<0&&ball.x<PW+7&&ball.y>py&&ball.y<py+PH){ ball.vx=Math.abs(ball.vx)*1.04; const rel=(ball.y-(py+PH/2))/(PH/2); ball.vy=rel*4.5; }
+  // AI 挡板
+  const aiCenter=ay+PH/2; if(ball.vx>0){ ay+=( (ball.y-aiCenter)*0.09 ); ay=Math.max(0,Math.min(H-PH,ay)); }
+  if(ball.vx>0&&ball.x>W-PW-7&&ball.y>ay&&ball.y<ay+PH){ ball.vx=-Math.abs(ball.vx)*1.04; const rel=(ball.y-(ay+PH/2))/(PH/2); ball.vy=rel*4.5; }
+  if(ball.x<-10){ as++; asEl.textContent=as; serve(); if(as>=5)return end(false); }
+  if(ball.x>W+10){ ps++; psEl.textContent=ps; serve(); if(ps>=5)return end(true); }
+  draw(); raf=requestAnimationFrame(update);
+}
+function end(win){ state='over'; document.getElementById('ovTitle').textContent=win?'🎉 你赢了':'😅 AI 赢了'; document.getElementById('ovMsg').innerHTML=`比分 <b style="color:#fbbf24">${ps} : ${as}</b>`; document.getElementById('ovBtn').textContent='再来一局'; document.getElementById('ov').style.display='flex'; cancelAnimationFrame(raf); }
+function start(){ reset(); state='play'; document.getElementById('ov').style.display='none'; cancelAnimationFrame(raf); raf=requestAnimationFrame(update); }
+document.getElementById('ovBtn').onclick=start;
+cv.addEventListener('mousemove',e=>{ const r=cv.getBoundingClientRect(); py=Math.max(0,Math.min(H-PH,(e.clientY-r.top)*(H/r.height)-PH/2)); });
+cv.addEventListener('touchmove',e=>{ const r=cv.getBoundingClientRect(); const t=e.touches[0]; py=Math.max(0,Math.min(H-PH,(t.clientY-r.top)*(H/r.height)-PH/2)); e.preventDefault(); },{passive:false});
+document.addEventListener('keydown',e=>{ if(state!=='play')return; const k=e.key.toLowerCase(); if(k==='arrowup'||k==='w')py=Math.max(0,py-26); else if(k==='arrowdown'||k==='s')py=Math.min(H-PH,py+26); });
+</script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>小恐龙跑酷 · 游戏厅</title>
+<link rel="stylesheet" href="games.css">
+</head>
+<body>
+<div class="game-topbar">
+  <a class="back-btn" href="index.html">← 游戏厅</a>
+  <span class="game-title">🦖 小恐龙跑酷</span>
+  <span class="score-badge"><small>分数</small> <b id="score">0</b></span>
+</div>
+<div class="game-stage">
+  <canvas id="cv" width="440" height="240"></canvas>
+  <div class="game-hint"><b>空格 / ↑ / 点击</b>跳跃 · <b>↓</b>蹲下躲飞鸟</div>
+  <div class="overlay" id="ov">
+    <h2 id="ovTitle">🦖 小恐龙跑酷</h2>
+    <p id="ovMsg">跳跃躲仙人掌与飞鸟，越跑越快。</p>
+    <button class="btn" id="ovBtn">开始游戏</button>
+  </div>
+</div>
+<script>
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const W=cv.width, H=cv.height, GROUND=200;
+let dino, obs, score, speed, t, raf, state;
+const scoreEl=document.getElementById('score');
+function reset(){ dino={x:40,y:GROUND,vy:0,duck:false,w:24,h:28}; obs=[]; score=0; speed=5; t=0; scoreEl.textContent=0; }
+function draw(){ ctx.fillStyle='#0f1020'; ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='rgba(255,255,255,.25)'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(0,GROUND+10); ctx.lineTo(W,GROUND+10); ctx.stroke();
+  // 地面虚线滚动
+  ctx.setLineDash([12,14]); ctx.lineDashOffset=-(t*speed)%26; ctx.beginPath(); ctx.moveTo(0,GROUND+14); ctx.lineTo(W,GROUND+14); ctx.stroke(); ctx.setLineDash([]);
+  // 恐龙
+  const dy=dino.duck?dino.y-4:dino.y; const dh=dino.duck?16:dino.h;
+  ctx.fillStyle='#10b981'; roundRect(dino.x,dy-dh,dino.w,dh,5); ctx.fill();
+  ctx.fillStyle='#000'; ctx.fillRect(dino.x+16,dy-dh+6,3,3);
+  // 障碍
+  obs.forEach(o=>{ if(o.type==='cactus'){ ctx.fillStyle='#22c55e'; o.parts.forEach(p=>{ roundRect(o.x+p.dx,p.y,p.w,p.h,3); ctx.fill(); }); }
+    else{ ctx.fillStyle='#fbbf24'; roundRect(o.x,o.y,o.w,o.h,6); ctx.fill(); ctx.fillStyle='#000'; const wingUp=o.flap<10; ctx.fillRect(o.x+4,wingUp?o.y+2:o.y+o.h-6,o.w-8,4); } });
+  ctx.fillStyle='#fff'; ctx.font='bold 20px sans-serif'; ctx.textAlign='right'; ctx.fillText(Math.floor(score),W-12,30);
+}
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function spawn(){ const r=Math.random(); if(r<0.7){ const w=16+((Math.random()*3)|0)*6; const n=1+((Math.random()*2)|0); const parts=[]; for(let i=0;i<n;i++)parts.push({dx:i*(w+2),y:GROUND-w*1.4,w:w*0.7,h:w*1.4}); const totalW=n*(w+2); obs.push({type:'cactus',x:W,parts,bb:{w:totalW,h:w*1.4}}); }
+  else{ const y=GROUND-((Math.random()*40+30)); obs.push({type:'bird',x:W,y,w:30,h:22,flap:0}); } }
+function bb(o){ return o.type==='cactus'?{x:o.x,y:GROUND-o.bb.h,w:o.bb.w,h:o.bb.h}:{x:o.x,y:o.y,w:o.w,h:o.h}; }
+function jump(){ if(state!=='play')return; if(dino.y>=GROUND-1){ dino.vy=-11.5; } }
+function duck(b){ dino.duck=b; }
+function update(){ if(state!=='play')return; t++; score+=0.2; speed=5+score*0.02; scoreEl.textContent=Math.floor(score);
+  dino.vy+=0.6; dino.y+=dino.vy; if(dino.y>GROUND){dino.y=GROUND;dino.vy=0;}
+  if(t%Math.max(45,90-Math.floor(score))===0)spawn();
+  obs.forEach(o=>{ o.x-=speed; if(o.type==='bird')o.flap=(o.flap+1)%20; });
+  obs=obs.filter(o=>o.x>-60);
+  const dr=dino.duck?{x:dino.x,y:dino.y-14,w:dino.w,h:14}:{x:dino.x,y:dino.y-dino.h,w:dino.w,h:dino.h};
+  for(const o of obs){ const b=bb(o); if(dr.x<b.x+b.w&&dr.x+dr.w>b.x&&dr.y<b.y+b.h&&dr.y+dr.h>b.y)return over(); }
+  draw(); raf=requestAnimationFrame(update);
+}
+function over(){ state='over'; document.getElementById('ovTitle').textContent='游戏结束'; document.getElementById('ovMsg').innerHTML=`得分 <b style="color:#fbbf24">${Math.floor(score)}</b>`; document.getElementById('ovBtn').textContent='再来一局'; document.getElementById('ov').style.display='flex'; cancelAnimationFrame(raf); }
+function start(){ reset(); state='play'; document.getElementById('ov').style.display='none'; cancelAnimationFrame(raf); raf=requestAnimationFrame(update); }
+document.getElementById('ovBtn').onclick=start;
+cv.addEventListener('click',jump); cv.addEventListener('touchstart',e=>{jump();e.preventDefault();},{passive:false});
+document.addEventListener('keydown',e=>{ const k=e.key.toLowerCase(); if(k===' '||k==='arrowup'||k==='w'){jump();e.preventDefault();} else if(k==='arrowdown'||k==='s'){duck(true);} });
+document.addEventListener('keyup',e=>{ const k=e.key.toLowerCase(); if(k==='arrowdown'||k==='s')duck(false); });
+</script>
+</body>
+</html>

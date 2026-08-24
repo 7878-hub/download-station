@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>俄罗斯方块 · 游戏厅</title>
+<link rel="stylesheet" href="games.css">
+</head>
+<body>
+<div class="game-topbar">
+  <a class="back-btn" href="index.html">← 游戏厅</a>
+  <span class="game-title">🧩 俄罗斯方块</span>
+  <span class="score-badge"><small>分数</small> <b id="score">0</b> · <small>行</small><b id="lines">0</b></span>
+</div>
+<div class="game-stage" id="stage">
+  <canvas id="cv" width="280" height="560"></canvas>
+  <div class="game-hint"><b>← →</b>移动 · <b>↑</b>旋转 · <b>↓</b>加速 · <b>空格</b>直落</div>
+  <div class="dpad">
+    <button class="up" data-k="rotate">↻</button>
+    <button class="left" data-k="left">◀</button>
+    <button class="right" data-k="right">▶</button>
+    <button class="down" data-k="down">▼</button>
+  </div>
+  <div class="overlay" id="ov">
+    <h2 id="ovTitle">🧩 俄罗斯方块</h2>
+    <p id="ovMsg">经典七块，消行得分。</p>
+    <button class="btn" id="ovBtn">开始游戏</button>
+  </div>
+</div>
+<script>
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const COLS=10, ROWS=20, CELL=28;
+cv.width=COLS*CELL; cv.height=ROWS*CELL;
+const COLORS=[null,'#06b6d4','#fbbf24','#8b5cf6','#f59e0b','#3b82f6','#22c55e','#ef4444'];
+const SHAPES=[
+ [[1,1,1,1]],
+ [[2,2],[2,2]],
+ [[0,3,0],[3,3,3]],
+ [[0,4,4],[4,4,0]],
+ [[5,5,0],[0,5,5]],
+ [[6,0,0],[6,6,6]],
+ [[0,0,7],[7,7,7]],
+];
+let board, cur, pos, score, lines, dropTimer, dropInt, state;
+const scoreEl=document.getElementById('score'), linesEl=document.getElementById('lines');
+
+function newBoard(){ return Array.from({length:ROWS},()=>Array(COLS).fill(0)); }
+function piece(){ const i=(Math.random()*SHAPES.length)|0; return SHAPES[i].map(r=>r.slice()); }
+function rotate(p){ const R=p.length,C=p[0].length; const n=Array.from({length:C},()=>Array(R).fill(0)); for(let r=0;r<R;r++)for(let c=0;c<C;c++)n[c][R-1-r]=p[r][c]; return n; }
+function valid(p,x,y){ for(let r=0;r<p.length;r++)for(let c=0;c<p[r].length;c++){ if(!p[r][c])continue; const nx=x+c,ny=y+r; if(nx<0||nx>=COLS||ny>=ROWS)return false; if(ny>=0&&board[ny][nx])return false; } return true; }
+function merge(){ for(let r=0;r<cur.length;r++)for(let c=0;c<cur[r].length;c++){ if(cur[r][c]&&pos.y+r>=0)board[pos.y+r][pos.x+c]=cur[r][c]; } }
+function clearLines(){ let cleared=0; for(let r=ROWS-1;r>=0;r--){ if(board[r].every(v=>v)){ board.splice(r,1); board.unshift(Array(COLS).fill(0)); cleared++; r++; } }
+  if(cleared){ lines+=cleared; linesEl.textContent=lines; score+=[0,100,300,500,800][cleared]; scoreEl.textContent=score; dropInt=Math.max(80,dropInt-12); } }
+function draw(){
+  ctx.fillStyle='#0f1020'; ctx.fillRect(0,0,cv.width,cv.height);
+  ctx.strokeStyle='rgba(255,255,255,.05)'; ctx.lineWidth=1;
+  for(let i=1;i<COLS;i++){ctx.beginPath();ctx.moveTo(i*CELL,0);ctx.lineTo(i*CELL,cv.height);ctx.stroke();}
+  for(let i=1;i<ROWS;i++){ctx.beginPath();ctx.moveTo(0,i*CELL);ctx.lineTo(cv.width,i*CELL);ctx.stroke();}
+  for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){ if(board[r][c])drawCell(c,r,COLORS[board[r][c]]); }
+  if(cur){ for(let r=0;r<cur.length;r++)for(let c=0;c<cur[r].length;c++){ if(cur[r][c])drawCell(pos.x+c,pos.y+r,COLORS[cur[r][c]]); } }
+}
+function drawCell(x,y,col){ ctx.fillStyle=col; roundRect(x*CELL+1,y*CELL+1,CELL-2,CELL-2,4); ctx.fill(); ctx.fillStyle='rgba(255,255,255,.18)'; roundRect(x*CELL+2,y*CELL+2,CELL-4,CELL-4,3); ctx.fill(); }
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function drop(){ if(!valid(cur,pos.x,pos.y+1)){ merge(); clearLines(); spawn(); } else pos.y++; draw(); }
+function spawn(){ cur=piece(); pos={x:((COLS-cur[0].length)/2)|0,y:0}; if(!valid(cur,pos.x,pos.y)) over(); }
+function move(dx){ if(valid(cur,pos.x+dx,pos.y))pos.x+=dx; draw(); }
+function rot(){ const r=rotate(cur); const kicks=[0,-1,1]; for(const k of kicks){ if(valid(r,pos.x+k,pos.y)){cur=r;pos.x+=k;draw();return;} } }
+function hardDrop(){ while(valid(cur,pos.x,pos.y+1))pos.y++; drop(); }
+function over(){ state='over'; document.getElementById('ovTitle').textContent='游戏结束'; document.getElementById('ovMsg').innerHTML=`消行 <b style="color:#fbbf24">${lines}</b> · 分数 <b style="color:#fbbf24">${score}</b>`; document.getElementById('ovBtn').textContent='再来一局'; document.getElementById('ov').style.display='flex'; clearInterval(dropTimer); }
+function start(){ board=newBoard(); score=0; lines=0; dropInt=480; scoreEl.textContent=0; linesEl.textContent=0; state='play'; document.getElementById('ov').style.display='none'; spawn(); draw(); clearInterval(dropTimer); dropTimer=setInterval(drop,dropInt); }
+document.getElementById('ovBtn').onclick=start;
+document.addEventListener('keydown',e=>{ if(state!=='play')return; const k=e.key.toLowerCase();
+  if(k==='arrowleft'||k==='a'){move(-1);e.preventDefault();}
+  else if(k==='arrowright'||k==='d'){move(1);e.preventDefault();}
+  else if(k==='arrowdown'||k==='s'){drop();e.preventDefault();}
+  else if(k==='arrowup'||k==='w'){rot();e.preventDefault();}
+  else if(k===' '){hardDrop();e.preventDefault();}
+});
+document.querySelectorAll('.dpad button').forEach(b=>b.onclick=()=>{ if(state!=='play')return; const fn=({left:()=>move(-1),right:()=>move(1),down:()=>drop,rotate:()=>rot()})[b.dataset.k]; if(fn)fn(); });
+</script>
+</body>
+</html>

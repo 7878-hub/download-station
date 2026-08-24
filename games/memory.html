@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>记忆翻牌 · 游戏厅</title>
+<link rel="stylesheet" href="games.css">
+<style>
+#board{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; width:min(94vw,380px); }
+.card{ aspect-ratio:3/4; perspective:600px; cursor:pointer; }
+.inner{ position:relative; width:100%; height:100%; transition:transform .4s; transform-style:preserve-3d; }
+.card.flipped .inner{ transform:rotateY(180deg); }
+.card.done{ animation:done .5s ease; }
+@keyframes done{ 50%{transform:scale(1.08);} }
+.face{ position:absolute; inset:0; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:32px; backface-visibility:hidden; -webkit-backface-visibility:hidden; }
+.back{ background:linear-gradient(135deg,#4f6df5,#3b54d4); color:#fff; font-size:24px; }
+.front{ background:#fff; border:2px solid #e4e7eb; transform:rotateY(180deg); }
+.card.done .front{ border-color:#22c55e; background:#dcfce7; }
+</style>
+</head>
+<body>
+<div class="game-topbar">
+  <a class="back-btn" href="index.html">← 游戏厅</a>
+  <span class="game-title">🃏 记忆翻牌</span>
+  <span class="score-badge"><small>步数</small> <b id="moves">0</b></span>
+</div>
+<div class="game-stage">
+  <div id="board"></div>
+  <div class="game-hint">翻开两张相同图案即可配对</div>
+  <div class="overlay" id="ov">
+    <h2 id="ovTitle">🃏 记忆翻牌</h2>
+    <p id="ovMsg">翻开所有配对，步数越少越好！</p>
+    <button class="btn" id="ovBtn">开始游戏</button>
+  </div>
+</div>
+<script>
+const EMOJIS=['🍎','🍌','🍇','🍓','🥝','🍑','🍒','🍉'];
+let deck, flipped, matched, moves, lock, state;
+const board=document.getElementById('board');
+const movesEl=document.getElementById('moves');
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=(Math.random()*(i+1))|0; [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function build(){
+  deck=shuffle([...EMOJIS,...EMOJIS]);
+  board.innerHTML=''; moves=0; movesEl.textContent=0; flipped=[]; matched=0; lock=false;
+  deck.forEach((e,i)=>{ const c=document.createElement('div'); c.className='card'; c.dataset.i=i; c.innerHTML=`<div class="inner"><div class="back">❓</div><div class="front">${e}</div></div>`; board.appendChild(c); });
+}
+function flip(i){ if(lock||state!=='play')return; const card=board.children[i]; if(card.classList.contains('flipped')||card.classList.contains('done'))return; card.classList.add('flipped'); flipped.push(i); if(flipped.length===2){ moves++; movesEl.textContent=moves; lock=true; check(); } }
+function check(){ const[a,b]=flipped; if(deck[a]===deck[b]){ setTimeout(()=>{ board.children[a].classList.add('done'); board.children[b].classList.add('done'); matched+=2; flipped=[]; lock=false; if(matched===deck.length)win(); },300); } else { setTimeout(()=>{ board.children[a].classList.remove('flipped'); board.children[b].classList.remove('flipped'); flipped=[]; lock=false; },800); } }
+function win(){ state='win'; document.getElementById('ovTitle').textContent='🎉 全部配对'; document.getElementById('ovMsg').innerHTML=`用了 <b style="color:#fbbf24">${moves}</b> 步`; document.getElementById('ovBtn').textContent='再来一局'; document.getElementById('ov').style.display='flex'; }
+function start(){ build(); state='play'; document.getElementById('ov').style.display='none'; }
+document.getElementById('ovBtn').onclick=start;
+board.addEventListener('click',e=>{ const c=e.target.closest('.card'); if(c)flip(+c.dataset.i); });
+</script>
+</body>
+</html>

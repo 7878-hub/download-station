@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>飞鸟跳跃 · 游戏厅</title>
+<link rel="stylesheet" href="games.css">
+</head>
+<body>
+<div class="game-topbar">
+  <a class="back-btn" href="index.html">← 游戏厅</a>
+  <span class="game-title">🐤 飞鸟跳跃</span>
+  <span class="score-badge"><small>分数</small> <b id="score">0</b></span>
+</div>
+<div class="game-stage">
+  <canvas id="cv" width="360" height="540"></canvas>
+  <div class="game-hint"><b>点击 / 空格</b>扇翅 · 穿越管道间隙</div>
+  <div class="overlay" id="ov">
+    <h2 id="ovovTitle">🐤 飞鸟跳跃</h2>
+    <p id="ovMsg">点击扇翅，穿越管道间隙。</p>
+    <button class="btn" id="ovBtn">开始游戏</button>
+  </div>
+</div>
+<script>
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const W=cv.width, H=cv.height, GAP=150, PW=52;
+let bird, pipes, score, t, raf, state;
+const scoreEl=document.getElementById('score');
+function reset(){ bird={x:80,y:H/2,vy:0,r:12}; pipes=[]; score=0; scoreEl.textContent=0; t=0; }
+function addPipe(){ const top=60+Math.random()*(H-GAP-120); pipes.push({x:W,top,bottom:top+GAP,passed:false}); }
+function draw(){ ctx.fillStyle='#0f1020'; ctx.fillRect(0,0,W,H);
+  pipes.forEach(p=>{ ctx.fillStyle='#22c55e'; ctx.fillRect(p.x,0,PW,p.top); ctx.fillRect(p.x,p.bottom,PW,H-p.bottom); ctx.fillStyle='#16a34a'; ctx.fillRect(p.x,p.top-6,PW,6); ctx.fillRect(p.x,p.bottom,PW,6); });
+  ctx.fillStyle='#fbbf24'; ctx.beginPath(); ctx.arc(bird.x,bird.y,bird.r,0,7); ctx.fill();
+  ctx.fillStyle='#000'; ctx.beginPath(); ctx.arc(bird.x+4,bird.y-3,2.4,0,7); ctx.fill();
+  ctx.fillStyle='#ef4444'; ctx.beginPath(); ctx.moveTo(bird.x+bird.r-2,bird.y); ctx.lineTo(bird.x+bird.r+7,bird.y-1); ctx.lineTo(bird.x+bird.r-2,bird.y+3); ctx.fill();
+  ctx.fillStyle='#fff'; ctx.font='bold 32px sans-serif'; ctx.textAlign='left'; ctx.fillText(score,W-50,50);
+}
+function flap(){ if(state!=='play')return; bird.vy=-7.2; }
+function update(){ if(state!=='play')return; t++; bird.vy+=0.42; bird.y+=bird.vy;
+  if(t%90===0)addPipe();
+  pipes.forEach(p=>{ p.x-=2.6; if(!p.passed&&p.x+PW<bird.x){p.passed=true;score++;scoreEl.textContent=score;} });
+  pipes=pipes.filter(p=>p.x>-PW);
+  if(bird.y+bird.r>H||bird.y-bird.r<0)return over();
+  for(const p of pipes){ if(bird.x+bird.r>p.x&&bird.x-bird.r<p.x+PW&&(bird.y-bird.r<p.top||bird.y+bird.r>p.bottom))return over(); }
+  draw(); raf=requestAnimationFrame(update);
+}
+function over(){ state='over'; document.getElementById('ovovTitle').textContent='游戏结束'; document.getElementById('ovMsg').innerHTML=`得分 <b style="color:#fbbf24">${score}</b>`; document.getElementById('ovBtn').textContent='再来一局'; document.getElementById('ov').style.display='flex'; cancelAnimationFrame(raf); }
+function start(){ reset(); state='play'; document.getElementById('ov').style.display='none'; cancelAnimationFrame(raf); raf=requestAnimationFrame(update); }
+document.getElementById('ovBtn').onclick=start;
+cv.addEventListener('click',flap); cv.addEventListener('touchstart',e=>{flap();e.preventDefault();},{passive:false});
+document.addEventListener('keydown',e=>{ if(e.key===' '){flap();e.preventDefault();} });
+</script>
+</body>
+</html>
