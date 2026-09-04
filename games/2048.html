@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
 <title>2048 · 游戏厅</title>
 <link rel="stylesheet" href="games.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%3E%3Crect%20x%3D%227%22%20y%3D%227%22%20width%3D%2234%22%20height%3D%2234%22%20rx%3D%226%22%20fill%3D%22%23f59e0b%22%2F%3E%3Ctext%20x%3D%2224%22%20y%3D%2225%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22central%22%20font-family%3D%22Arial%2Csans-serif%22%20font-weight%3D%22800%22%20font-size%3D%2212%22%20fill%3D%22%23fff%22%3E2048%3C%2Ftext%3E%3C%2Fsvg%3E">
 <style>
 #board{ width:360px; height:360px; background:#cdc1b4; border-radius:10px; position:relative; padding:10px; }
 .cell{ position:absolute; width:80px; height:80px; border-radius:8px; background:#cdc1b4; transition:all .12s ease; }
@@ -21,14 +22,14 @@
 <body>
 <div class="game-topbar">
   <a class="back-btn" href="index.html">← 游戏厅</a>
-  <span class="game-title">🔢 2048</span>
+  <span class="game-title"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect x="7" y="7" width="34" height="34" rx="6" fill="#f59e0b"/><text x="24" y="25" text-anchor="middle" dominant-baseline="central" font-family="Arial,sans-serif" font-weight="800" font-size="12" fill="#fff">2048</text></svg> 2048</span>
   <span class="score-badge"><small>分数</small> <b id="score">0</b></span>
 </div>
 <div class="game-stage" id="stage">
   <div id="board"></div>
   <div class="game-hint"><b>方向键 / WASD</b> 或滑动屏幕合并相同数字</div>
   <div class="overlay" id="ov">
-    <h2 id="ovTitle">🔢 2048</h2>
+    <h2 id="ovTitle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect x="7" y="7" width="34" height="34" rx="6" fill="#f59e0b"/><text x="24" y="25" text-anchor="middle" dominant-baseline="central" font-family="Arial,sans-serif" font-weight="800" font-size="12" fill="#fff">2048</text></svg> 2048</h2>
     <p id="ovMsg">滑动合并相同数字，凑出 2048！</p>
     <button class="btn" id="ovBtn">开始游戏</button>
   </div>

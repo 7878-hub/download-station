@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>数字华容道 · 游戏厅</title>
+<link rel="stylesheet" href="games.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%3E%3Crect%20x%3D%227%22%20y%3D%227%22%20width%3D%2234%22%20height%3D%2234%22%20rx%3D%224%22%20fill%3D%22%233b82f6%22%2F%3E%3Crect%20x%3D%2210%22%20y%3D%2210%22%20width%3D%2213%22%20height%3D%2213%22%20rx%3D%222%22%20fill%3D%22%2360a5fa%22%2F%3E%3Crect%20x%3D%2225%22%20y%3D%2210%22%20width%3D%2213%22%20height%3D%2213%22%20rx%3D%222%22%20fill%3D%22%2360a5fa%22%2F%3E%3Crect%20x%3D%2210%22%20y%3D%2225%22%20width%3D%2213%22%20height%3D%2213%22%20rx%3D%222%22%20fill%3D%22%2360a5fa%22%2F%3E%3Crect%20x%3D%2225%22%20y%3D%2225%22%20width%3D%2213%22%20height%3D%2213%22%20rx%3D%222%22%20fill%3D%22%2393c5fd%22%2F%3E%3Cg%20font-family%3D%22Arial%2Csans-serif%22%20font-weight%3D%22800%22%20font-size%3D%229%22%20fill%3D%22%23fff%22%20text-anchor%3D%22middle%22%3E%3Ctext%20x%3D%2216.5%22%20y%3D%2217.5%22%20dominant-baseline%3D%22central%22%3E1%3C%2Ftext%3E%3Ctext%20x%3D%2231.5%22%20y%3D%2217.5%22%20dominant-baseline%3D%22central%22%3E2%3C%2Ftext%3E%3Ctext%20x%3D%2216.5%22%20y%3D%2232.5%22%20dominant-baseline%3D%22central%22%3E3%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fsvg%3E">
+<style>
+#board{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; width:min(80vw,320px); }
+.tile{ aspect-ratio:1; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:34px; font-weight:800; cursor:pointer; user-select:none; transition:transform .12s, background .12s; }
+.tile.on{ background:#3b82f6; color:#fff; box-shadow:0 3px 0 #1d4ed8; }
+.tile.on:active{ transform:scale(.94); }
+.tile.blank{ background:transparent; box-shadow:none; cursor:default; }
+.tile.done{ background:#1d4ed8; }
+.info-row{ display:flex; gap:14px; font-size:13px; color:var(--text-secondary); }
+.info-row b{ color:var(--primary); font-size:16px; }
+</style>
+</head>
+<body>
+<div class="game-topbar">
+  <a class="back-btn" href="index.html">← 游戏厅</a>
+  <span class="game-title"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect x="7" y="7" width="34" height="34" rx="4" fill="#3b82f6"/><rect x="10" y="10" width="13" height="13" rx="2" fill="#60a5fa"/><rect x="25" y="10" width="13" height="13" rx="2" fill="#60a5fa"/><rect x="10" y="25" width="13" height="13" rx="2" fill="#60a5fa"/><rect x="25" y="25" width="13" height="13" rx="2" fill="#93c5fd"/><g font-family="Arial,sans-serif" font-weight="800" font-size="9" fill="#fff" text-anchor="middle"><text x="16.5" y="17.5" dominant-baseline="central">1</text><text x="31.5" y="17.5" dominant-baseline="central">2</text><text x="16.5" y="32.5" dominant-baseline="central">3</text></g></svg> 数字华容道</span>
+  <span class="score-badge"><small>步数</small><b id="mv">0</b></span>
+</div>
+<div class="game-stage">
+  <div class="info-row" style="margin-bottom:10px"><span>最佳 <b id="best">-</b></span><span>按数字顺序还原 1~15</span></div>
+  <div id="board"></div>
+  <div class="game-hint">点击数字块滑入空位 · 也支持方向键</div>
+  <div class="overlay" id="ov">
+    <h2 id="ovTitle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect x="7" y="7" width="34" height="34" rx="4" fill="#3b82f6"/><rect x="10" y="10" width="13" height="13" rx="2" fill="#60a5fa"/><rect x="25" y="10" width="13" height="13" rx="2" fill="#60a5fa"/><rect x="10" y="25" width="13" height="13" rx="2" fill="#60a5fa"/><rect x="25" y="25" width="13" height="13" rx="2" fill="#93c5fd"/><g font-family="Arial,sans-serif" font-weight="800" font-size="9" fill="#fff" text-anchor="middle"><text x="16.5" y="17.5" dominant-baseline="central">1</text><text x="31.5" y="17.5" dominant-baseline="central">2</text><text x="16.5" y="32.5" dominant-baseline="central">3</text></g></svg> 数字华容道</h2>
+    <p id="ovMsg">把数字按顺序还原成 1~15。</p>
+    <button class="btn" id="ovBtn">开始游戏</button>
+  </div>
+</div>
+<script>
+let tiles, blank, moves, playing=false;
+const board=document.getElementById('board');
+const bestKey='p15best';
+if(localStorage.getItem(bestKey))document.getElementById('best').textContent=localStorage.getItem(bestKey);
+
+function build(){
+  // 生成可解排列：从完成态随机走 300 步
+  tiles=[...Array(15).keys()].map(i=>i+1).concat([0]); blank=15;
+  for(let i=0;i<300;i++){
+    const nb=neighbors(blank);
+    const pick=nb[Math.random()*nb.length|0];
+    [tiles[blank],tiles[pick]]=[tiles[pick],tiles[blank]];
+    blank=pick;
+  }
+  moves=0; playing=true; render();
+  document.getElementById('ov').style.display='none';
+}
+function neighbors(i){
+  const r=i/4|0, c=i%4, n=[];
+  if(r>0)n.push(i-4); if(r<3)n.push(i+4);
+  if(c>0)n.push(i-1); if(c<3)n.push(i+1);
+  return n;
+}
+function render(){
+  board.innerHTML='';
+  for(let i=0;i<16;i++){
+    const t=document.createElement('div');
+    const v=tiles[i];
+    if(v===0){ t.className='tile blank'; }
+    else{
+      const correct=v-1===i;
+      t.className='tile on'+(correct?' done':'');
+      t.textContent=v; t.dataset.i=i;
+    }
+    board.appendChild(t);
+  }
+  document.getElementById('mv').textContent=moves;
+}
+function tryMove(i){
+  if(!playing||i===blank)return false;
+  if(!neighbors(blank).includes(i))return false;
+  [tiles[blank],tiles[i]]=[tiles[i],tiles[blank]];
+  blank=i; moves++; render(); checkWin();
+  return true;
+}
+function checkWin(){
+  if(tiles.slice(0,15).every((v,i)=>v===i+1)){
+    playing=false;
+    const b=localStorage.getItem(bestKey);
+    if(!b||moves<+b){ localStorage.setItem(bestKey,moves); document.getElementById('best').textContent=moves; }
+    document.getElementById('ovTitle').textContent='还原成功！';
+    document.getElementById('ovMsg').textContent=`用了 ${moves} 步，再来一局挑战更少步数？`;
+    document.getElementById('ovBtn').textContent='再来一局';
+    document.getElementById('ov').style.display='flex';
+  }
+}
+board.addEventListener('click',e=>{ const t=e.target.closest('.tile:not(.blank)'); if(t)tryMove(+t.dataset.i); });
+document.addEventListener('keydown',e=>{
+  if(!playing)return;
+  // 方向键：把对应方向的块滑进空位（按 = 空位左侧的块向右滑）
+  const r=blank/4|0, c=blank%4;
+  let i=-1;
+  if(e.key==='ArrowUp'&&r<3)i=blank+4;
+  if(e.key==='ArrowDown'&&r>0)i=blank-4;
+  if(e.key==='ArrowLeft'&&c<3)i=blank+1;
+  if(e.key==='ArrowRight'&&c>0)i=blank-1;
+  if(i>=0){ e.preventDefault(); tryMove(i); }
+});
+document.getElementById('ovBtn').onclick=build;
+build();
+</script>
+</body>
+</html>

@@ -148,3 +148,12 @@ canvas{
 }
 
 .hub-footer{ text-align:center; margin-top:30px; font-size:12px; color:var(--text-secondary); }
+
+
+/* ===== 扁平 SVG 图标尺寸 ===== */
+.hub-header .arcade svg{ width:64px; height:64px; display:block; }
+.game-card .emoji svg{ width:42px; height:42px; display:block; }
+.game-title svg{ width:22px; height:22px; vertical-align:-4px; margin-right:7px; }
+.overlay h2 svg{ width:30px; height:30px; vertical-align:-5px; margin-right:9px; }
+.mole svg{ width:100%; display:block; }
+.score-row b svg{ width:14px; height:14px; vertical-align:-2px; }

@@ -6,60 +6,60 @@
 // 文件类型配置：图标、颜色、分类
 const FILE_TYPES = {
     // 文档类
-    pdf:    { icon: '📄', color: '#ef4444', bg: '#fee2e2', category: '文档', label: 'PDF' },
-    doc:    { icon: '📝', color: '#2563eb', bg: '#dbeafe', category: '文档', label: 'DOC' },
-    docx:   { icon: '📝', color: '#2563eb', bg: '#dbeafe', category: '文档', label: 'DOCX' },
-    xls:    { icon: '📊', color: '#16a34a', bg: '#dcfce7', category: '文档', label: 'XLS' },
-    xlsx:   { icon: '📊', color: '#16a34a', bg: '#dcfce7', category: '文档', label: 'XLSX' },
-    ppt:    { icon: '📑', color: '#ea580c', bg: '#fed7aa', category: '文档', label: 'PPT' },
-    pptx:   { icon: '📑', color: '#ea580c', bg: '#fed7aa', category: '文档', label: 'PPTX' },
-    txt:    { icon: '📃', color: '#6b7280', bg: '#f3f4f6', category: '文档', label: 'TXT' },
-    md:     { icon: '📃', color: '#6b7280', bg: '#f3f4f6', category: '文档', label: 'MD' },
+    pdf:    { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M7 2h7l4 4v16H7z\" fill=\"#fff\"/><path d=\"M14 2v4h4z\" fill=\"#fecaca\"/><path d=\"M10 11h6M10 14.5h6M10 18h4\" stroke=\"#ef4444\" stroke-width=\"1.6\" stroke-linecap=\"round\"/></svg>", color: '#ef4444', bg: '#fee2e2', category: '文档', label: 'PDF' },
+    doc:    { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M7 2h7l4 4v16H7z\" fill=\"#fff\"/><path d=\"M14 2v4h4z\" fill=\"#dbeafe\"/><path d=\"M12.5 15.5l5.5-5.5 2 2-5.5 5.5-2.6.6z\" fill=\"#2563eb\"/></svg>", color: '#2563eb', bg: '#dbeafe', category: '文档', label: 'DOC' },
+    docx:   { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M7 2h7l4 4v16H7z\" fill=\"#fff\"/><path d=\"M14 2v4h4z\" fill=\"#dbeafe\"/><path d=\"M12.5 15.5l5.5-5.5 2 2-5.5 5.5-2.6.6z\" fill=\"#2563eb\"/></svg>", color: '#2563eb', bg: '#dbeafe', category: '文档', label: 'DOCX' },
+    xls:    { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"2\" fill=\"#fff\"/><path d=\"M4 9.3h16M4 14.6h16M9.3 4v16M14.6 4v16\" stroke=\"#16a34a\" stroke-width=\"1.5\"/></svg>", color: '#16a34a', bg: '#dcfce7', category: '文档', label: 'XLS' },
+    xlsx:   { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"2\" fill=\"#fff\"/><path d=\"M4 9.3h16M4 14.6h16M9.3 4v16M14.6 4v16\" stroke=\"#16a34a\" stroke-width=\"1.5\"/></svg>", color: '#16a34a', bg: '#dcfce7', category: '文档', label: 'XLSX' },
+    ppt:    { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"12\" rx=\"2\" fill=\"#fff\"/><path d=\"M8 8h8M8 11h5\" stroke=\"#ea580c\" stroke-width=\"1.6\" stroke-linecap=\"round\"/><path d=\"M12 16v4M9 20h6\" stroke=\"#ea580c\" stroke-width=\"1.6\" stroke-linecap=\"round\"/></svg>", color: '#ea580c', bg: '#fed7aa', category: '文档', label: 'PPT' },
+    pptx:   { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"12\" rx=\"2\" fill=\"#fff\"/><path d=\"M8 8h8M8 11h5\" stroke=\"#ea580c\" stroke-width=\"1.6\" stroke-linecap=\"round\"/><path d=\"M12 16v4M9 20h6\" stroke=\"#ea580c\" stroke-width=\"1.6\" stroke-linecap=\"round\"/></svg>", color: '#ea580c', bg: '#fed7aa', category: '文档', label: 'PPTX' },
+    txt:    { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M7 2h7l4 4v16H7z\" fill=\"#fff\"/><path d=\"M14 2v4h4z\" fill=\"#e5e7eb\"/><path d=\"M10 11h7M10 14h7M10 17h5\" stroke=\"#6b7280\" stroke-width=\"1.6\" stroke-linecap=\"round\"/></svg>", color: '#6b7280', bg: '#f3f4f6', category: '文档', label: 'TXT' },
+    md:     { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M7 2h7l4 4v16H7z\" fill=\"#fff\"/><path d=\"M14 2v4h4z\" fill=\"#e5e7eb\"/><path d=\"M10 11h7M10 14h7M10 17h5\" stroke=\"#6b7280\" stroke-width=\"1.6\" stroke-linecap=\"round\"/></svg>", color: '#6b7280', bg: '#f3f4f6', category: '文档', label: 'MD' },
 
     // 压缩包
-    zip:    { icon: '🗜️', color: '#7c3aed', bg: '#ede9fe', category: '压缩包', label: 'ZIP' },
-    rar:    { icon: '🗜️', color: '#7c3aed', bg: '#ede9fe', category: '压缩包', label: 'RAR' },
-    '7z':   { icon: '🗜️', color: '#7c3aed', bg: '#ede9fe', category: '压缩包', label: '7Z' },
-    tar:    { icon: '🗜️', color: '#7c3aed', bg: '#ede9fe', category: '压缩包', label: 'TAR' },
-    gz:     { icon: '🗜️', color: '#7c3aed', bg: '#ede9fe', category: '压缩包', label: 'GZ' },
+    zip:    { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M6 3h12v18H6z\" fill=\"#fff\"/><rect x=\"10.5\" y=\"3\" width=\"3\" height=\"18\" fill=\"#7c3aed\" opacity=\".2\"/><g fill=\"#7c3aed\"><rect x=\"10.8\" y=\"5\" width=\"2.4\" height=\"2.4\" rx=\".5\"/><rect x=\"10.8\" y=\"9.5\" width=\"2.4\" height=\"2.4\" rx=\".5\"/><rect x=\"10.8\" y=\"14\" width=\"2.4\" height=\"2.4\" rx=\".5\"/><rect x=\"10.8\" y=\"18\" width=\"2.4\" height=\"2\" rx=\".5\"/></g></svg>", color: '#7c3aed', bg: '#ede9fe', category: '压缩包', label: 'ZIP' },
+    rar:    { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M6 3h12v18H6z\" fill=\"#fff\"/><rect x=\"10.5\" y=\"3\" width=\"3\" height=\"18\" fill=\"#7c3aed\" opacity=\".2\"/><g fill=\"#7c3aed\"><rect x=\"10.8\" y=\"5\" width=\"2.4\" height=\"2.4\" rx=\".5\"/><rect x=\"10.8\" y=\"9.5\" width=\"2.4\" height=\"2.4\" rx=\".5\"/><rect x=\"10.8\" y=\"14\" width=\"2.4\" height=\"2.4\" rx=\".5\"/><rect x=\"10.8\" y=\"18\" width=\"2.4\" height=\"2\" rx=\".5\"/></g></svg>", color: '#7c3aed', bg: '#ede9fe', category: '压缩包', label: 'RAR' },
+    '7z':   { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M6 3h12v18H6z\" fill=\"#fff\"/><rect x=\"10.5\" y=\"3\" width=\"3\" height=\"18\" fill=\"#7c3aed\" opacity=\".2\"/><g fill=\"#7c3aed\"><rect x=\"10.8\" y=\"5\" width=\"2.4\" height=\"2.4\" rx=\".5\"/><rect x=\"10.8\" y=\"9.5\" width=\"2.4\" height=\"2.4\" rx=\".5\"/><rect x=\"10.8\" y=\"14\" width=\"2.4\" height=\"2.4\" rx=\".5\"/><rect x=\"10.8\" y=\"18\" width=\"2.4\" height=\"2\" rx=\".5\"/></g></svg>", color: '#7c3aed', bg: '#ede9fe', category: '压缩包', label: '7Z' },
+    tar:    { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M6 3h12v18H6z\" fill=\"#fff\"/><rect x=\"10.5\" y=\"3\" width=\"3\" height=\"18\" fill=\"#7c3aed\" opacity=\".2\"/><g fill=\"#7c3aed\"><rect x=\"10.8\" y=\"5\" width=\"2.4\" height=\"2.4\" rx=\".5\"/><rect x=\"10.8\" y=\"9.5\" width=\"2.4\" height=\"2.4\" rx=\".5\"/><rect x=\"10.8\" y=\"14\" width=\"2.4\" height=\"2.4\" rx=\".5\"/><rect x=\"10.8\" y=\"18\" width=\"2.4\" height=\"2\" rx=\".5\"/></g></svg>", color: '#7c3aed', bg: '#ede9fe', category: '压缩包', label: 'TAR' },
+    gz:     { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M6 3h12v18H6z\" fill=\"#fff\"/><rect x=\"10.5\" y=\"3\" width=\"3\" height=\"18\" fill=\"#7c3aed\" opacity=\".2\"/><g fill=\"#7c3aed\"><rect x=\"10.8\" y=\"5\" width=\"2.4\" height=\"2.4\" rx=\".5\"/><rect x=\"10.8\" y=\"9.5\" width=\"2.4\" height=\"2.4\" rx=\".5\"/><rect x=\"10.8\" y=\"14\" width=\"2.4\" height=\"2.4\" rx=\".5\"/><rect x=\"10.8\" y=\"18\" width=\"2.4\" height=\"2\" rx=\".5\"/></g></svg>", color: '#7c3aed', bg: '#ede9fe', category: '压缩包', label: 'GZ' },
 
     // 图片
-    jpg:    { icon: '🖼️', color: '#0891b2', bg: '#cffafe', category: '图片', label: 'JPG' },
-    jpeg:   { icon: '🖼️', color: '#0891b2', bg: '#cffafe', category: '图片', label: 'JPEG' },
-    png:    { icon: '🖼️', color: '#0891b2', bg: '#cffafe', category: '图片', label: 'PNG' },
-    gif:    { icon: '🖼️', color: '#0891b2', bg: '#cffafe', category: '图片', label: 'GIF' },
-    svg:    { icon: '🖼️', color: '#0891b2', bg: '#cffafe', category: '图片', label: 'SVG' },
-    webp:   { icon: '🖼️', color: '#0891b2', bg: '#cffafe', category: '图片', label: 'WEBP' },
+    jpg:    { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"16\" rx=\"2\" fill=\"#fff\"/><circle cx=\"9\" cy=\"10\" r=\"2\" fill=\"#0891b2\"/><path d=\"M5 19l5-5 3 3 3-4 5 6z\" fill=\"#06b6d4\"/></svg>", color: '#0891b2', bg: '#cffafe', category: '图片', label: 'JPG' },
+    jpeg:   { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"16\" rx=\"2\" fill=\"#fff\"/><circle cx=\"9\" cy=\"10\" r=\"2\" fill=\"#0891b2\"/><path d=\"M5 19l5-5 3 3 3-4 5 6z\" fill=\"#06b6d4\"/></svg>", color: '#0891b2', bg: '#cffafe', category: '图片', label: 'JPEG' },
+    png:    { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"16\" rx=\"2\" fill=\"#fff\"/><circle cx=\"9\" cy=\"10\" r=\"2\" fill=\"#0891b2\"/><path d=\"M5 19l5-5 3 3 3-4 5 6z\" fill=\"#06b6d4\"/></svg>", color: '#0891b2', bg: '#cffafe', category: '图片', label: 'PNG' },
+    gif:    { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"16\" rx=\"2\" fill=\"#fff\"/><circle cx=\"9\" cy=\"10\" r=\"2\" fill=\"#0891b2\"/><path d=\"M5 19l5-5 3 3 3-4 5 6z\" fill=\"#06b6d4\"/></svg>", color: '#0891b2', bg: '#cffafe', category: '图片', label: 'GIF' },
+    svg:    { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"16\" rx=\"2\" fill=\"#fff\"/><circle cx=\"9\" cy=\"10\" r=\"2\" fill=\"#0891b2\"/><path d=\"M5 19l5-5 3 3 3-4 5 6z\" fill=\"#06b6d4\"/></svg>", color: '#0891b2', bg: '#cffafe', category: '图片', label: 'SVG' },
+    webp:   { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"16\" rx=\"2\" fill=\"#fff\"/><circle cx=\"9\" cy=\"10\" r=\"2\" fill=\"#0891b2\"/><path d=\"M5 19l5-5 3 3 3-4 5 6z\" fill=\"#06b6d4\"/></svg>", color: '#0891b2', bg: '#cffafe', category: '图片', label: 'WEBP' },
 
     // 视频
-    mp4:    { icon: '🎬', color: '#be185d', bg: '#fce7f3', category: '视频', label: 'MP4' },
-    avi:    { icon: '🎬', color: '#be185d', bg: '#fce7f3', category: '视频', label: 'AVI' },
-    mkv:    { icon: '🎬', color: '#be185d', bg: '#fce7f3', category: '视频', label: 'MKV' },
-    mov:    { icon: '🎬', color: '#be185d', bg: '#fce7f3', category: '视频', label: 'MOV' },
+    mp4:    { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><rect x=\"3\" y=\"9\" width=\"18\" height=\"11\" rx=\"1.5\" fill=\"#be185d\"/><path d=\"M3 9l2-4 16 2-1 4z\" fill=\"#ec4899\"/><path d=\"M6.5 6.7l2-1.5M10.5 7.2l2-1.5M14.5 7.7l2-1.5\" stroke=\"#fff\" stroke-width=\"1.2\" stroke-linecap=\"round\"/></svg>", color: '#be185d', bg: '#fce7f3', category: '视频', label: 'MP4' },
+    avi:    { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><rect x=\"3\" y=\"9\" width=\"18\" height=\"11\" rx=\"1.5\" fill=\"#be185d\"/><path d=\"M3 9l2-4 16 2-1 4z\" fill=\"#ec4899\"/><path d=\"M6.5 6.7l2-1.5M10.5 7.2l2-1.5M14.5 7.7l2-1.5\" stroke=\"#fff\" stroke-width=\"1.2\" stroke-linecap=\"round\"/></svg>", color: '#be185d', bg: '#fce7f3', category: '视频', label: 'AVI' },
+    mkv:    { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><rect x=\"3\" y=\"9\" width=\"18\" height=\"11\" rx=\"1.5\" fill=\"#be185d\"/><path d=\"M3 9l2-4 16 2-1 4z\" fill=\"#ec4899\"/><path d=\"M6.5 6.7l2-1.5M10.5 7.2l2-1.5M14.5 7.7l2-1.5\" stroke=\"#fff\" stroke-width=\"1.2\" stroke-linecap=\"round\"/></svg>", color: '#be185d', bg: '#fce7f3', category: '视频', label: 'MKV' },
+    mov:    { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><rect x=\"3\" y=\"9\" width=\"18\" height=\"11\" rx=\"1.5\" fill=\"#be185d\"/><path d=\"M3 9l2-4 16 2-1 4z\" fill=\"#ec4899\"/><path d=\"M6.5 6.7l2-1.5M10.5 7.2l2-1.5M14.5 7.7l2-1.5\" stroke=\"#fff\" stroke-width=\"1.2\" stroke-linecap=\"round\"/></svg>", color: '#be185d', bg: '#fce7f3', category: '视频', label: 'MOV' },
 
     // 音频
-    mp3:    { icon: '🎵', color: '#9333ea', bg: '#f3e8ff', category: '音频', label: 'MP3' },
-    wav:    { icon: '🎵', color: '#9333ea', bg: '#f3e8ff', category: '音频', label: 'WAV' },
-    flac:   { icon: '🎵', color: '#9333ea', bg: '#f3e8ff', category: '音频', label: 'FLAC' },
+    mp3:    { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M9 18V5l10-2v12\" fill=\"none\" stroke=\"#9333ea\" stroke-width=\"2\" stroke-linejoin=\"round\"/><circle cx=\"6.5\" cy=\"18\" r=\"3\" fill=\"#9333ea\"/><circle cx=\"16.5\" cy=\"15\" r=\"3\" fill=\"#9333ea\"/></svg>", color: '#9333ea', bg: '#f3e8ff', category: '音频', label: 'MP3' },
+    wav:    { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M9 18V5l10-2v12\" fill=\"none\" stroke=\"#9333ea\" stroke-width=\"2\" stroke-linejoin=\"round\"/><circle cx=\"6.5\" cy=\"18\" r=\"3\" fill=\"#9333ea\"/><circle cx=\"16.5\" cy=\"15\" r=\"3\" fill=\"#9333ea\"/></svg>", color: '#9333ea', bg: '#f3e8ff', category: '音频', label: 'WAV' },
+    flac:   { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M9 18V5l10-2v12\" fill=\"none\" stroke=\"#9333ea\" stroke-width=\"2\" stroke-linejoin=\"round\"/><circle cx=\"6.5\" cy=\"18\" r=\"3\" fill=\"#9333ea\"/><circle cx=\"16.5\" cy=\"15\" r=\"3\" fill=\"#9333ea\"/></svg>", color: '#9333ea', bg: '#f3e8ff', category: '音频', label: 'FLAC' },
 
     // 软件/程序
-    exe:    { icon: '⚙️', color: '#4f6df5', bg: '#e8edff', category: '软件', label: 'EXE' },
-    msi:    { icon: '⚙️', color: '#4f6df5', bg: '#e8edff', category: '软件', label: 'MSI' },
-    apk:    { icon: '📱', color: '#059669', bg: '#d1fae5', category: '软件', label: 'APK' },
-    dmg:    { icon: '💻', color: '#64748b', bg: '#f1f5f9', category: '软件', label: 'DMG' },
-    iso:    { icon: '💿', color: '#475569', bg: '#f1f5f9', category: '软件', label: 'ISO' },
+    exe:    { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"12\" r=\"4\" fill=\"none\" stroke=\"#4f6df5\" stroke-width=\"2.4\"/><path d=\"M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1\" stroke=\"#4f6df5\" stroke-width=\"2.2\" stroke-linecap=\"round\"/></svg>", color: '#4f6df5', bg: '#e8edff', category: '软件', label: 'EXE' },
+    msi:    { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"12\" r=\"4\" fill=\"none\" stroke=\"#4f6df5\" stroke-width=\"2.4\"/><path d=\"M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1\" stroke=\"#4f6df5\" stroke-width=\"2.2\" stroke-linecap=\"round\"/></svg>", color: '#4f6df5', bg: '#e8edff', category: '软件', label: 'MSI' },
+    apk:    { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><rect x=\"7\" y=\"2\" width=\"10\" height=\"20\" rx=\"2.5\" fill=\"#059669\"/><rect x=\"9\" y=\"5\" width=\"6\" height=\"12\" rx=\"1\" fill=\"#d1fae5\"/><circle cx=\"12\" cy=\"19\" r=\"1\" fill=\"#d1fae5\"/></svg>", color: '#059669', bg: '#d1fae5', category: '软件', label: 'APK' },
+    dmg:    { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><rect x=\"4\" y=\"6\" width=\"16\" height=\"10\" rx=\"1.5\" fill=\"#64748b\"/><rect x=\"6\" y=\"8\" width=\"12\" height=\"6\" rx=\".8\" fill=\"#f1f5f9\"/><path d=\"M3 17.5h18v2a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z\" fill=\"#475569\"/></svg>", color: '#64748b', bg: '#f1f5f9', category: '软件', label: 'DMG' },
+    iso:    { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"12\" r=\"9.5\" fill=\"#475569\"/><circle cx=\"12\" cy=\"12\" r=\"3\" fill=\"#f1f5f9\"/><circle cx=\"12\" cy=\"12\" r=\"1.2\" fill=\"#475569\"/><path d=\"M5.5 9A8 8 0 0 1 9 5.2\" stroke=\"#94a3b8\" stroke-width=\"1.5\" fill=\"none\" stroke-linecap=\"round\"/></svg>", color: '#475569', bg: '#f1f5f9', category: '软件', label: 'ISO' },
 
     // 代码
-    js:     { icon: '📜', color: '#ca8a04', bg: '#fef9c3', category: '代码', label: 'JS' },
-    ts:     { icon: '📜', color: '#ca8a04', bg: '#fef9c3', category: '代码', label: 'TS' },
-    py:     { icon: '🐍', color: '#3b82f6', bg: '#dbeafe', category: '代码', label: 'PY' },
-    java:   { icon: '☕', color: '#dc2626', bg: '#fee2e2', category: '代码', label: 'JAVA' },
-    html:   { icon: '🌐', color: '#ea580c', bg: '#fed7aa', category: '代码', label: 'HTML' },
-    css:    { icon: '🎨', color: '#2563eb', bg: '#dbeafe', category: '代码', label: 'CSS' },
-    json:   { icon: '🔧', color: '#64748b', bg: '#f1f5f9', category: '代码', label: 'JSON' },
+    js:     { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M8.5 6L4 12l4.5 6M15.5 6L20 12l-4.5 6\" fill=\"none\" stroke=\"#ca8a04\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", color: '#ca8a04', bg: '#fef9c3', category: '代码', label: 'JS' },
+    ts:     { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M8.5 6L4 12l4.5 6M15.5 6L20 12l-4.5 6\" fill=\"none\" stroke=\"#ca8a04\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>", color: '#ca8a04', bg: '#fef9c3', category: '代码', label: 'TS' },
+    py:     { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M6 17h5a3 3 0 0 0 0-6h-2a3 3 0 0 1 0-6h6\" fill=\"none\" stroke=\"#3b82f6\" stroke-width=\"2.6\" stroke-linecap=\"round\"/><circle cx=\"18\" cy=\"5\" r=\"2.4\" fill=\"#3b82f6\"/><circle cx=\"18.7\" cy=\"4.4\" r=\".7\" fill=\"#fff\"/></svg>", color: '#3b82f6', bg: '#dbeafe', category: '代码', label: 'PY' },
+    java:   { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M4 8h13v7a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z\" fill=\"#dc2626\"/><path d=\"M17 9h2.5a3 3 0 0 1 0 6H17\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2\"/><path d=\"M4 4c1 1 1 2 0 3M8 3.5c1 1 1 2 0 3\" stroke=\"#dc2626\" stroke-width=\"1.6\" stroke-linecap=\"round\"/></svg>", color: '#dc2626', bg: '#fee2e2', category: '代码', label: 'JAVA' },
+    html:   { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"12\" r=\"9\" fill=\"#ea580c\"/><path d=\"M3 12h18M12 3a13 13 0 0 1 0 18 13 13 0 0 1 0-18z\" stroke=\"#fed7aa\" stroke-width=\"1.5\" fill=\"none\"/></svg>", color: '#ea580c', bg: '#fed7aa', category: '代码', label: 'HTML' },
+    css:    { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M14 3l7 7-9 9H7v-5z\" fill=\"#2563eb\"/><path d=\"M7 14l-4 6 6-4z\" fill=\"#1d4ed8\"/></svg>", color: '#2563eb', bg: '#dbeafe', category: '代码', label: 'CSS' },
+    json:   { icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M14.7 6.3a4.5 4.5 0 0 0-6 6L4 17l3 3 4.7-4.7a4.5 4.5 0 0 0 6-6l-3 3-3-3z\" fill=\"#64748b\"/></svg>", color: '#64748b', bg: '#f1f5f9', category: '代码', label: 'JSON' },
 
     // 默认
-    default:{ icon: '📁', color: '#6b7280', bg: '#f3f4f6', category: '其他', label: 'FILE' }
+    default:{ icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M3 6a1.5 1.5 0 0 1 1.5-1.5H9l2 2.5h8.5A1.5 1.5 0 0 1 21 8.5V18a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18z\" fill=\"#6b7280\"/></svg>", color: '#6b7280', bg: '#f3f4f6', category: '其他', label: 'FILE' }
 };
 
 // 状态
@@ -239,7 +239,7 @@ async function loadFiles() {
     } catch (err) {
         grid.innerHTML = `
             <div class="error-state">
-                <span class="error-icon">⚠️</span>
+                <span class="error-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path d="M24 6L45 42H3z" fill="#f59e0b"/><rect x="21.5" y="18" width="5" height="12" rx="2.5" fill="#fff"/><circle cx="24" cy="36" r="3" fill="#fff"/></svg></span>
                 <h3>加载失败</h3>
                 <p>${err.message}</p>
                 <p>请确保 files.json 文件存在且格式正确</p>

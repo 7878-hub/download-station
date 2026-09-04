@@ -5,37 +5,38 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>游戏厅 · 文件下载站</title>
 <link rel="stylesheet" href="games.css">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%3E%3Crect%20x%3D%229%22%20y%3D%2230%22%20width%3D%2230%22%20height%3D%2210%22%20rx%3D%225%22%20fill%3D%22%233b54d4%22%2F%3E%3Crect%20x%3D%2221%22%20y%3D%2213%22%20width%3D%226%22%20height%3D%2217%22%20rx%3D%223%22%20fill%3D%22%234f6df5%22%2F%3E%3Ccircle%20cx%3D%2224%22%20cy%3D%2211%22%20r%3D%226.5%22%20fill%3D%22%23ef4444%22%2F%3E%3Ccircle%20cx%3D%2221.5%22%20cy%3D%228.5%22%20r%3D%222%22%20fill%3D%22%23fca5a5%22%2F%3E%3C%2Fsvg%3E">
 </head>
 <body>
 <div class="hub-wrap">
 
   <header class="hub-header">
     <div class="hub-back"><a href="../index.html">← 返回下载站</a></div>
-    <span class="arcade">🕹️</span>
+    <span class="arcade" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect x="9" y="30" width="30" height="10" rx="5" fill="#3b54d4"/><rect x="21" y="13" width="6" height="17" rx="3" fill="#4f6df5"/><circle cx="24" cy="11" r="6.5" fill="#ef4444"/><circle cx="21.5" cy="8.5" r="2" fill="#fca5a5"/></svg></span>
     <h1>游戏厅</h1>
     <p>纯前端，无需联网，点开即玩 · 共 12 款</p>
   </header>
 
   <div class="game-grid" id="grid"></div>
 
-  <div class="hub-footer">所有游戏均在本地浏览器运行 · 不收集任何数据 🎮</div>
+  <div class="hub-footer">所有游戏均在本地浏览器运行 · 不收集任何数据</div>
 </div>
 
 <script>
+const ICONS = {"SNAKE":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 48 48\"><path d=\"M9 35h11a6 6 0 0 0 0-12h-5a6 6 0 0 1 0-12h13\" fill=\"none\" stroke=\"#22c55e\" stroke-width=\"7\" stroke-linecap=\"round\"/><circle cx=\"33\" cy=\"11\" r=\"6\" fill=\"#22c55e\"/><circle cx=\"35\" cy=\"9.5\" r=\"1.7\" fill=\"#fff\"/><path d=\"M39 12h3l3-2M42 12l3 2\" stroke=\"#ef4444\" stroke-width=\"1.6\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>","G2048":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 48 48\"><rect x=\"7\" y=\"7\" width=\"34\" height=\"34\" rx=\"6\" fill=\"#f59e0b\"/><text x=\"24\" y=\"25\" text-anchor=\"middle\" dominant-baseline=\"central\" font-family=\"Arial,sans-serif\" font-weight=\"800\" font-size=\"12\" fill=\"#fff\">2048</text></svg>","TETRIS":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 48 48\"><rect x=\"8\" y=\"8\" width=\"12\" height=\"12\" rx=\"2\" fill=\"#818cf8\"/><rect x=\"8\" y=\"22\" width=\"12\" height=\"12\" rx=\"2\" fill=\"#6366f1\"/><rect x=\"8\" y=\"36\" width=\"12\" height=\"10\" rx=\"2\" fill=\"#4f46e5\"/><rect x=\"22\" y=\"36\" width=\"12\" height=\"10\" rx=\"2\" fill=\"#6366f1\"/><rect x=\"26\" y=\"8\" width=\"7\" height=\"7\" rx=\"1.2\" fill=\"#a5b4fc\"/><rect x=\"33\" y=\"8\" width=\"7\" height=\"7\" rx=\"1.2\" fill=\"#818cf8\"/><rect x=\"26\" y=\"15\" width=\"7\" height=\"7\" rx=\"1.2\" fill=\"#818cf8\"/><rect x=\"33\" y=\"15\" width=\"7\" height=\"7\" rx=\"1.2\" fill=\"#6366f1\"/></svg>","BREAKOUT":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 48 48\"><g><rect x=\"7\" y=\"8\" width=\"7\" height=\"5\" rx=\"1\" fill=\"#ef4444\"/><rect x=\"16\" y=\"8\" width=\"7\" height=\"5\" rx=\"1\" fill=\"#ef4444\"/><rect x=\"25\" y=\"8\" width=\"7\" height=\"5\" rx=\"1\" fill=\"#ef4444\"/><rect x=\"34\" y=\"8\" width=\"7\" height=\"5\" rx=\"1\" fill=\"#ef4444\"/><rect x=\"7\" y=\"15\" width=\"7\" height=\"5\" rx=\"1\" fill=\"#f59e0b\"/><rect x=\"16\" y=\"15\" width=\"7\" height=\"5\" rx=\"1\" fill=\"#f59e0b\"/><rect x=\"25\" y=\"15\" width=\"7\" height=\"5\" rx=\"1\" fill=\"#f59e0b\"/><rect x=\"34\" y=\"15\" width=\"7\" height=\"5\" rx=\"1\" fill=\"#f59e0b\"/></g><circle cx=\"22\" cy=\"30\" r=\"4\" fill=\"#1a1a2e\"/><rect x=\"15\" y=\"41\" width=\"18\" height=\"4\" rx=\"2\" fill=\"#4f6df5\"/></svg>","MINE48":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 48 48\"><rect x=\"7\" y=\"7\" width=\"16\" height=\"16\" rx=\"3\" fill=\"#f1f5f9\"/><path d=\"M14 12v9\" stroke=\"#334155\" stroke-width=\"2\" stroke-linecap=\"round\"/><path d=\"M14 12l8 3-8 3z\" fill=\"#ef4444\"/><rect x=\"25\" y=\"7\" width=\"16\" height=\"16\" rx=\"3\" fill=\"#e2e8f0\"/><rect x=\"7\" y=\"25\" width=\"16\" height=\"16\" rx=\"3\" fill=\"#e2e8f0\"/><rect x=\"25\" y=\"25\" width=\"16\" height=\"16\" rx=\"3\" fill=\"#64748b\"/><circle cx=\"33\" cy=\"33\" r=\"4.5\" fill=\"#1e293b\"/><circle cx=\"31.5\" cy=\"31.5\" r=\"1.3\" fill=\"#fff\"/></svg>","MEMORY48":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 48 48\"><rect x=\"6\" y=\"12\" width=\"22\" height=\"28\" rx=\"3\" fill=\"#8b5cf6\"/><path d=\"M11 18l3-3 3 3-3 3zM15 28l3-3 3 3-3 3z\" fill=\"#c4b5fd\"/><rect x=\"20\" y=\"8\" width=\"22\" height=\"28\" rx=\"3\" fill=\"#ede9fe\"/><path d=\"M31 14l2.3 5 5.5.6-4.1 3.7 1.2 5.4-4.9-2.9-4.9 2.9 1.2-5.4-4.1-3.7 5.5-.6z\" fill=\"#8b5cf6\"/></svg>","TICTACTOE48":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 48 48\"><path d=\"M18 7v34M30 7v34M7 18h34M7 30h34\" stroke=\"#e4e7eb\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M10.5 10.5l5 5m0-5l-5 5M32.5 32.5l5 5m0-5l-5 5\" stroke=\"#ec4899\" stroke-width=\"3.4\" stroke-linecap=\"round\"/><circle cx=\"24\" cy=\"24\" r=\"4.2\" fill=\"none\" stroke=\"#4f6df5\" stroke-width=\"3.4\"/></svg>","PONG":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 48 48\"><path d=\"M24 6v36\" stroke=\"#cbd5e1\" stroke-width=\"3\" stroke-dasharray=\"4 7\" stroke-linecap=\"round\"/><rect x=\"6\" y=\"13\" width=\"4.5\" height=\"12\" rx=\"2.2\" fill=\"#06b6d4\"/><rect x=\"37.5\" y=\"23\" width=\"4.5\" height=\"12\" rx=\"2.2\" fill=\"#06b6d4\"/><circle cx=\"24\" cy=\"18\" r=\"4\" fill=\"#f59e0b\"/></svg>","FLAPPY":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 48 48\"><path d=\"M18 13l2.5-5 2.5 5z\" fill=\"#f59e0b\"/><circle cx=\"23\" cy=\"25\" r=\"12\" fill=\"#fbbf24\"/><ellipse cx=\"17\" cy=\"27\" rx=\"5.5\" ry=\"3.8\" fill=\"#f59e0b\"/><path d=\"M34 23l9 3-9 3z\" fill=\"#f97316\"/><circle cx=\"28\" cy=\"19\" r=\"2.6\" fill=\"#fff\"/><circle cx=\"28.7\" cy=\"19\" r=\"1.3\" fill=\"#1a1a2e\"/></svg>","DINO":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 48 48\"><path d=\"M6 28l10-5v9z\" fill=\"#10b981\"/><rect x=\"14\" y=\"17\" width=\"19\" height=\"15\" rx=\"6\" fill=\"#10b981\"/><rect x=\"26\" y=\"9\" width=\"13\" height=\"10\" rx=\"4.5\" fill=\"#10b981\"/><circle cx=\"35\" cy=\"13\" r=\"1.9\" fill=\"#fff\"/><path d=\"M17 17l2-3.5 2 3.5zm7 0l2-3.5 2 3.5z\" fill=\"#059669\"/><rect x=\"17\" y=\"31\" width=\"5\" height=\"8\" rx=\"2\" fill=\"#10b981\"/><rect x=\"26\" y=\"31\" width=\"5\" height=\"8\" rx=\"2\" fill=\"#10b981\"/></svg>","PUZZLE48":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 48 48\"><rect x=\"7\" y=\"7\" width=\"34\" height=\"34\" rx=\"4\" fill=\"#3b82f6\"/><rect x=\"10\" y=\"10\" width=\"13\" height=\"13\" rx=\"2\" fill=\"#60a5fa\"/><rect x=\"25\" y=\"10\" width=\"13\" height=\"13\" rx=\"2\" fill=\"#60a5fa\"/><rect x=\"10\" y=\"25\" width=\"13\" height=\"13\" rx=\"2\" fill=\"#60a5fa\"/><rect x=\"25\" y=\"25\" width=\"13\" height=\"13\" rx=\"2\" fill=\"#93c5fd\"/><g font-family=\"Arial,sans-serif\" font-weight=\"800\" font-size=\"9\" fill=\"#fff\" text-anchor=\"middle\"><text x=\"16.5\" y=\"17.5\" dominant-baseline=\"central\">1</text><text x=\"31.5\" y=\"17.5\" dominant-baseline=\"central\">2</text><text x=\"16.5\" y=\"32.5\" dominant-baseline=\"central\">3</text></g></svg>","WHACK48":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 48 48\"><ellipse cx=\"26\" cy=\"40\" rx=\"13\" ry=\"4.5\" fill=\"#78350f\"/><circle cx=\"20\" cy=\"30\" r=\"4\" fill=\"#92400e\"/><circle cx=\"32\" cy=\"30\" r=\"4\" fill=\"#92400e\"/><circle cx=\"26\" cy=\"36\" r=\"8\" fill=\"#a16207\"/><circle cx=\"29\" cy=\"33\" r=\"2\" fill=\"#1a1a2e\"/><ellipse cx=\"26\" cy=\"38\" rx=\"2\" ry=\"1.5\" fill=\"#f472b6\"/><g transform=\"rotate(38 14 10)\"><rect x=\"6\" y=\"4\" width=\"17\" height=\"8\" rx=\"2\" fill=\"#64748b\"/><rect x=\"20\" y=\"6\" width=\"18\" height=\"4.5\" rx=\"2.2\" fill=\"#b45309\"/></g></svg>"};
 const GAMES = [
-  {f:'snake.html',      e:'🐍', n:'贪吃蛇',     d:'吃豆变长，别撞墙别咬自己', c:'#22c55e', l:'#dcfce7'},
-  {f:'2048.html',       e:'🔢', n:'2048',       d:'滑动合并，凑出 2048',     c:'#f59e0b', l:'#fef3c7'},
-  {f:'tetris.html',     e:'🧩', n:'俄罗斯方块', d:'经典七块，消行得分',     c:'#6366f1', l:'#e0e7ff'},
-  {f:'breakout.html',   e:'🧱', n:'打砖块',     d:'弹球击碎所有砖块',       c:'#ef4444', l:'#fee2e2'},
-  {f:'minesweeper.html',e:'💣', n:'扫雷',        d:'推理排雷，别踩到雷',     c:'#64748b', l:'#f1f5f9'},
-  {f:'memory.html',     e:'🃏', n:'记忆翻牌',    d:'翻开配对，考验记忆力',   c:'#8b5cf6', l:'#ede9fe'},
-  {f:'tictactoe.html',  e:'⭕', n:'井字棋',      d:'人机对战三连成线',       c:'#ec4899', l:'#fce7f3'},
-  {f:'pong.html',       e:'🏓', n:'弹球对战',    d:'人机弹球，先到 5 分',    c:'#06b6d4', l:'#cffafe'},
-  {f:'flappy.html',     e:'🐤', n:'飞鸟跳跃',    d:'点击扇翅，穿越管道',     c:'#fbbf24', l:'#fef9c3'},
-  {f:'dinorun.html',    e:'🦖', n:'小恐龙跑酷',  d:'跳跃躲仙人掌与飞鸟',     c:'#10b981', l:'#d1fae5'},
-  {f:'puzzle15.html',   e:'🧮', n:'数字华容道',  d:'滑动还原 1~15',          c:'#3b82f6', l:'#dbeafe'},
-  {f:'whack.html',      e:'🔨', n:'打地鼠',      d:'30 秒内敲到尽量多地鼠',   c:'#f97316', l:'#ffedd5'},
+  {f:'snake.html',      e:ICONS.SNAKE, n:'贪吃蛇',     d:'吃豆变长，别撞墙别咬自己', c:'#22c55e', l:'#dcfce7'},
+  {f:'2048.html',       e:ICONS.G2048, n:'2048',       d:'滑动合并，凑出 2048',     c:'#f59e0b', l:'#fef3c7'},
+  {f:'tetris.html',     e:ICONS.TETRIS, n:'俄罗斯方块', d:'经典七块，消行得分',     c:'#6366f1', l:'#e0e7ff'},
+  {f:'breakout.html',   e:ICONS.BREAKOUT, n:'打砖块',     d:'弹球击碎所有砖块',       c:'#ef4444', l:'#fee2e2'},
+  {f:'minesweeper.html',e:ICONS.MINE48, n:'扫雷',        d:'推理排雷，别踩到雷',     c:'#64748b', l:'#f1f5f9'},
+  {f:'memory.html',     e:ICONS.MEMORY48, n:'记忆翻牌',    d:'翻开配对，考验记忆力',   c:'#8b5cf6', l:'#ede9fe'},
+  {f:'tictactoe.html',  e:ICONS.TICTACTOE48, n:'井字棋',      d:'人机对战三连成线',       c:'#ec4899', l:'#fce7f3'},
+  {f:'pong.html',       e:ICONS.PONG, n:'弹球对战',    d:'人机弹球，先到 5 分',    c:'#06b6d4', l:'#cffafe'},
+  {f:'flappy.html',     e:ICONS.FLAPPY, n:'飞鸟跳跃',    d:'点击扇翅，穿越管道',     c:'#fbbf24', l:'#fef9c3'},
+  {f:'dinorun.html',    e:ICONS.DINO, n:'小恐龙跑酷',  d:'跳跃躲仙人掌与飞鸟',     c:'#10b981', l:'#d1fae5'},
+  {f:'puzzle15.html',   e:ICONS.PUZZLE48, n:'数字华容道',  d:'滑动还原 1~15',          c:'#3b82f6', l:'#dbeafe'},
+  {f:'whack.html',      e:ICONS.WHACK48, n:'打地鼠',      d:'30 秒内敲到尽量多地鼠',   c:'#f97316', l:'#ffedd5'},
 ];
 
 document.getElementById('grid').innerHTML = GAMES.map(g => `

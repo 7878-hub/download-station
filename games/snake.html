@@ -5,11 +5,12 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
 <title>贪吃蛇 · 游戏厅</title>
 <link rel="stylesheet" href="games.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%3E%3Cpath%20d%3D%22M9%2035h11a6%206%200%200%200%200-12h-5a6%206%200%200%201%200-12h13%22%20fill%3D%22none%22%20stroke%3D%22%2322c55e%22%20stroke-width%3D%227%22%20stroke-linecap%3D%22round%22%2F%3E%3Ccircle%20cx%3D%2233%22%20cy%3D%2211%22%20r%3D%226%22%20fill%3D%22%2322c55e%22%2F%3E%3Ccircle%20cx%3D%2235%22%20cy%3D%229.5%22%20r%3D%221.7%22%20fill%3D%22%23fff%22%2F%3E%3Cpath%20d%3D%22M39%2012h3l3-2M42%2012l3%202%22%20stroke%3D%22%23ef4444%22%20stroke-width%3D%221.6%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E">
 </head>
 <body>
 <div class="game-topbar">
   <a class="back-btn" href="index.html">← 游戏厅</a>
-  <span class="game-title">🐍 贪吃蛇</span>
+  <span class="game-title"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path d="M9 35h11a6 6 0 0 0 0-12h-5a6 6 0 0 1 0-12h13" fill="none" stroke="#22c55e" stroke-width="7" stroke-linecap="round"/><circle cx="33" cy="11" r="6" fill="#22c55e"/><circle cx="35" cy="9.5" r="1.7" fill="#fff"/><path d="M39 12h3l3-2M42 12l3 2" stroke="#ef4444" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg> 贪吃蛇</span>
   <span class="score-badge"><small>分数</small> <b id="score">0</b></span>
 </div>
 
@@ -23,7 +24,7 @@
     <button class="down" data-d="down">▼</button>
   </div>
   <div class="overlay" id="ov">
-    <h2 id="ovTitle">🐍 贪吃蛇</h2>
+    <h2 id="ovTitle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path d="M9 35h11a6 6 0 0 0 0-12h-5a6 6 0 0 1 0-12h13" fill="none" stroke="#22c55e" stroke-width="7" stroke-linecap="round"/><circle cx="33" cy="11" r="6" fill="#22c55e"/><circle cx="35" cy="9.5" r="1.7" fill="#fff"/><path d="M39 12h3l3-2M42 12l3 2" stroke="#ef4444" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg> 贪吃蛇</h2>
     <p id="ovMsg">吃豆变长，别撞墙别咬自己。</p>
     <button class="btn" id="ovBtn">开始游戏</button>
   </div>

@@ -1036,3 +1036,73 @@ body.scare-shake {
     70%      { transform: translate(-5px, -3px) scale(1.01); }
     80%      { transform: translate(3px, 2px) scale(1); }
 }
+
+/* ===== 🎮 游戏厅入口横幅 ===== */
+.games-banner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 32px 0 8px;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    text-decoration: none;
+    transition: var(--transition);
+}
+.games-banner:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(79,109,245,0.35);
+}
+.games-banner-emoji {
+    font-size: 34px;
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+.games-banner-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    color: #ffffff;
+    flex: 1;
+    min-width: 0;
+}
+.games-banner-text strong {
+    font-size: 17px;
+    font-weight: 700;
+}
+.games-banner-text span {
+    font-size: 13px;
+    color: rgba(255,255,255,0.85);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.games-banner-arrow {
+    font-size: 22px;
+    color: #ffffff;
+    transition: transform 0.2s;
+}
+.games-banner:hover .games-banner-arrow {
+    transform: translateX(4px);
+}
+@media (max-width: 480px) {
+    .games-banner { padding: 14px 16px; gap: 12px; }
+    .games-banner-emoji { font-size: 26px; }
+    .games-banner-text strong { font-size: 15px; }
+    .games-banner-text span { white-space: normal; }
+}
+
+
+/* ===== 扁平 SVG 图标尺寸 ===== */
+.logo-icon svg{ width:36px; height:36px; display:block; }
+.file-icon svg{ width:30px; height:30px; display:block; }
+.empty-icon svg{ width:48px; height:48px; display:block; margin:0 auto; }
+.changelog summary svg{ width:16px; height:16px; vertical-align:-3px; margin-right:5px; }
+.games-banner-emoji svg{ width:36px; height:36px; display:block; }
+.scare-btn svg{ width:27px; height:27px; display:block; }
+@media (max-width:480px){
+  .logo-icon svg{ width:28px; height:28px; }
+  .file-icon svg{ width:26px; height:26px; }
+}
+.error-state .error-icon svg{ width:48px; height:48px; display:block; margin:0 auto 12px; }

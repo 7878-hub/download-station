@@ -5,11 +5,12 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
 <title>俄罗斯方块 · 游戏厅</title>
 <link rel="stylesheet" href="games.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%3E%3Crect%20x%3D%228%22%20y%3D%228%22%20width%3D%2212%22%20height%3D%2212%22%20rx%3D%222%22%20fill%3D%22%23818cf8%22%2F%3E%3Crect%20x%3D%228%22%20y%3D%2222%22%20width%3D%2212%22%20height%3D%2212%22%20rx%3D%222%22%20fill%3D%22%236366f1%22%2F%3E%3Crect%20x%3D%228%22%20y%3D%2236%22%20width%3D%2212%22%20height%3D%2210%22%20rx%3D%222%22%20fill%3D%22%234f46e5%22%2F%3E%3Crect%20x%3D%2222%22%20y%3D%2236%22%20width%3D%2212%22%20height%3D%2210%22%20rx%3D%222%22%20fill%3D%22%236366f1%22%2F%3E%3Crect%20x%3D%2226%22%20y%3D%228%22%20width%3D%227%22%20height%3D%227%22%20rx%3D%221.2%22%20fill%3D%22%23a5b4fc%22%2F%3E%3Crect%20x%3D%2233%22%20y%3D%228%22%20width%3D%227%22%20height%3D%227%22%20rx%3D%221.2%22%20fill%3D%22%23818cf8%22%2F%3E%3Crect%20x%3D%2226%22%20y%3D%2215%22%20width%3D%227%22%20height%3D%227%22%20rx%3D%221.2%22%20fill%3D%22%23818cf8%22%2F%3E%3Crect%20x%3D%2233%22%20y%3D%2215%22%20width%3D%227%22%20height%3D%227%22%20rx%3D%221.2%22%20fill%3D%22%236366f1%22%2F%3E%3C%2Fsvg%3E">
 </head>
 <body>
 <div class="game-topbar">
   <a class="back-btn" href="index.html">← 游戏厅</a>
-  <span class="game-title">🧩 俄罗斯方块</span>
+  <span class="game-title"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect x="8" y="8" width="12" height="12" rx="2" fill="#818cf8"/><rect x="8" y="22" width="12" height="12" rx="2" fill="#6366f1"/><rect x="8" y="36" width="12" height="10" rx="2" fill="#4f46e5"/><rect x="22" y="36" width="12" height="10" rx="2" fill="#6366f1"/><rect x="26" y="8" width="7" height="7" rx="1.2" fill="#a5b4fc"/><rect x="33" y="8" width="7" height="7" rx="1.2" fill="#818cf8"/><rect x="26" y="15" width="7" height="7" rx="1.2" fill="#818cf8"/><rect x="33" y="15" width="7" height="7" rx="1.2" fill="#6366f1"/></svg> 俄罗斯方块</span>
   <span class="score-badge"><small>分数</small> <b id="score">0</b> · <small>行</small><b id="lines">0</b></span>
 </div>
 <div class="game-stage" id="stage">
@@ -22,7 +23,7 @@
     <button class="down" data-k="down">▼</button>
   </div>
   <div class="overlay" id="ov">
-    <h2 id="ovTitle">🧩 俄罗斯方块</h2>
+    <h2 id="ovTitle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect x="8" y="8" width="12" height="12" rx="2" fill="#818cf8"/><rect x="8" y="22" width="12" height="12" rx="2" fill="#6366f1"/><rect x="8" y="36" width="12" height="10" rx="2" fill="#4f46e5"/><rect x="22" y="36" width="12" height="10" rx="2" fill="#6366f1"/><rect x="26" y="8" width="7" height="7" rx="1.2" fill="#a5b4fc"/><rect x="33" y="8" width="7" height="7" rx="1.2" fill="#818cf8"/><rect x="26" y="15" width="7" height="7" rx="1.2" fill="#818cf8"/><rect x="33" y="15" width="7" height="7" rx="1.2" fill="#6366f1"/></svg> 俄罗斯方块</h2>
     <p id="ovMsg">经典七块，消行得分。</p>
     <button class="btn" id="ovBtn">开始游戏</button>
   </div>
